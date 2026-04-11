@@ -5,12 +5,10 @@ const app = express();
 app.use(express.static(path.join(__dirname)));
 app.use(express.json());
 
-// Route halaman utama
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Route admin
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
