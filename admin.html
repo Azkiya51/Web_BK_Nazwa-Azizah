@@ -64,7 +64,7 @@
         tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center">Memuat data...</td></tr>';
 
         try {
-            const response = await fetch('http://localhost:3000/api/konseling');
+            const response = await fetch('/api/konseling');
             const data = await response.json();
 
             tableBody.innerHTML = ''; // Bersihkan loading
