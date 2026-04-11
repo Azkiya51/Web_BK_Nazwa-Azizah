@@ -58,7 +58,7 @@ document.getElementById('counselingForm').addEventListener('submit', async funct
     };
 
     try {
-        const response = await fetch('http://localhost:3000/api/konseling', {
+         const response = await fetch('/api/konseling', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
