@@ -20,7 +20,7 @@ body {
 }
 
 /* ============================
-   NAVIGASI
+   NAVIGASI (DESKTOP FIRST)
 ============================ */
 .navbar {
     display: flex;
@@ -38,7 +38,6 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary);
-    white-space: nowrap;
 }
 
 .nav-links {
@@ -68,11 +67,6 @@ body {
     border: 1px dashed var(--primary);
 }
 
-.nav-admin:hover {
-    background: var(--primary) !important;
-    color: white !important;
-}
-
 /* ============================
    HERO SECTION
 ============================ */
@@ -82,10 +76,6 @@ body {
     align-items: center;
     padding: 40px 8%;
     background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
-}
-
-.hero-content {
-    max-width: 800px;
 }
 
 .hero-content h1 {
@@ -103,28 +93,59 @@ body {
 }
 
 /* ============================
-   BUTTONS & LAYOUT
+   LAYOUT & COMPONENTS
 ============================ */
-button, .btn-primary, .btn-secondary {
-    padding: 12px 30px;
-    border-radius: 30px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
-    display: inline-block;
-    text-align: center;
-}
-
-.btn-primary { background: var(--primary); color: white; }
-.btn-secondary { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
-
 .container { max-width: 1000px; margin: auto; padding: 0 20px; }
 .section-padding { padding: 60px 0; }
-.text-center { text-align: center; }
+
+.booking-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.mode-selector { display: flex; gap: 10px; margin-bottom: 30px; }
+.mode-btn { flex: 1; padding: 12px; background: #f0f0f0; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.mode-btn.active { background: var(--primary); color: white; }
 
 /* ============================
-   PROFIL CARD
+   SECTION PENILAIAN (PINDAHAN DARI PENILAIAN.HTML)
+============================ */
+.penilaian-section {
+    background: linear-gradient(135deg, #e0f2fe 0%, #f4f7f6 60%, #e8f8f0 100%);
+    padding: 70px 8%;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-box {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+.stat-number { font-size: 2.8rem; font-weight: 700; }
+
+.vote-bar-track {
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+}
+
+/* ============================
+   PROFILE CARD
 ============================ */
 .profile-card {
     max-width: 800px;
@@ -135,60 +156,32 @@ button, .btn-primary, .btn-secondary {
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
 }
 
-.profile-header {
-    height: 150px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-}
-
-.profile-body {
-    padding: 0 40px 40px;
-    text-align: center;
-    margin-top: -60px;
-}
-
-.profile-img {
-    width: 120px;
-    height: 120px;
-    background: white;
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 5px solid white;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
+.profile-header { height: 150px; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+.profile-body { padding: 0 40px 40px; text-align: center; margin-top: -60px; }
+.profile-img { width: 120px; height: 120px; background: white; border-radius: 50%; margin: 0 auto 20px; border: 5px solid white; display: flex; align-items: center; justify-content: center; }
 
 /* ======================================================
-   RESPONSIVE (MOBILE & TABLET)
+   RESPONSIVE FIXES (SISTEM ANTI ACAK-ACAKAN)
    ====================================================== */
 
-@media (max-width: 992px) {
-    .navbar { padding: 15px 5%; }
-    .hero-content h1 { font-size: 2.8rem; }
-}
-
 @media (max-width: 768px) {
-    /* Navbar Mobile */
+    /* Navbar jadi Vertikal tapi rapi */
     .navbar {
         flex-direction: column;
+        padding: 15px 5%;
         gap: 15px;
-        text-align: center;
     }
 
     .nav-links {
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
         justify-content: center;
     }
 
-    .nav-links a { font-size: 0.9rem; }
-
-    /* Hero Mobile */
+    /* Hero menyesuaikan layar HP */
     .hero {
-        padding: 60px 5%;
         text-align: center;
-        min-height: auto;
+        padding: 60px 5%;
     }
 
     .hero-content h1 { font-size: 2.2rem; }
@@ -197,48 +190,32 @@ button, .btn-primary, .btn-secondary {
         flex-direction: column;
     }
 
-    .btn-primary, .btn-secondary {
+    /* Tombol jadi lebar penuh di HP agar mudah diklik */
+    button, .btn-primary, .btn-secondary {
         width: 100%;
+        margin-bottom: 5px;
     }
 
-    /* Stats Grid */
+    /* Penilaian & Stats jadi 1 kolom di HP */
     .stats-grid {
         grid-template-columns: 1fr;
-        gap: 15px;
     }
 
-    /* Counseling Card */
-    .booking-card { padding: 25px 20px; }
-    
-    .mode-selector {
-        flex-direction: column;
-    }
+    .stat-number { font-size: 2.2rem; }
+
+    /* Counseling Form */
+    .mode-selector { flex-direction: column; }
+    .booking-card { padding: 20px; }
 
     /* Profile Mobile */
     .profile-body { padding: 0 20px 30px; }
 }
 
-/* Tambahan kode lainnya (Section Penilaian, Modal, dll) tetap sama 
-   seperti yang Anda buat sebelumnya */
+/* Page Management */
 .page { display: none; }
-.page.active { display: block; }
+.page.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 
-.booking-card {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-
-.mode-selector { display: flex; gap: 10px; margin-bottom: 30px; }
-.mode-btn { flex: 1; padding: 12px; background: #f0f0f0; border-radius: 10px; border:none; cursor:pointer; }
-.mode-btn.active { background: var(--primary); color: white; }
-
-.input-group { margin-bottom: 20px; display: flex; flex-direction: column; }
-.input-group input, .input-group select, .input-group textarea {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-top: 5px;
-}
-.btn-submit { background: var(--secondary); color: white; width: 100%; font-size: 1rem; border:none; border-radius: 10px; padding: 15px; cursor: pointer;}
