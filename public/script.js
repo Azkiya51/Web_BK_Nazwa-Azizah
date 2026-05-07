@@ -221,8 +221,25 @@ document.getElementById('adminPass')?.addEventListener('keypress', function(e) {
 });
 
 // ============================
+// VIEW COUNTER - Catat kunjungan
+// ============================
+async function recordPageView() {
+    try {
+        await fetch('/api/views/record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ page: window.location.pathname || '/' })
+        });
+    } catch (e) {
+        // Diam-diam gagal, tidak perlu alert ke user
+        console.log('View record skipped:', e.message);
+    }
+}
+
+// ============================
 // INIT
 // ============================
 window.addEventListener('load', () => {
     loadPenilaianBeranda();
+    recordPageView(); // Catat kunjungan saat halaman dibuka
 });
