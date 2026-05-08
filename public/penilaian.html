@@ -16,9 +16,7 @@
             --like: #2ecc71;
             --dislike: #e74c3c;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #e0f2fe 0%, #f4f7f6 60%, #e8f8f0 100%);
@@ -38,14 +36,12 @@
             top: 0;
             z-index: 100;
         }
-
         .logo {
             font-size: 1.4rem;
             font-weight: 700;
             color: var(--primary);
             text-decoration: none;
         }
-
         .back-btn {
             display: flex;
             align-items: center;
@@ -59,7 +55,6 @@
             transition: 0.2s;
             background: var(--light);
         }
-
         .back-btn:hover { background: #dce9f5; color: var(--primary); }
 
         /* Hero */
@@ -67,7 +62,6 @@
             text-align: center;
             padding: 60px 20px 40px;
         }
-
         .hero-section .tag {
             display: inline-block;
             background: #ebf5fb;
@@ -80,7 +74,6 @@
             border-radius: 30px;
             margin-bottom: 20px;
         }
-
         .hero-section h1 {
             font-family: 'Playfair Display', serif;
             font-size: 2.8rem;
@@ -88,9 +81,7 @@
             margin-bottom: 12px;
             line-height: 1.2;
         }
-
         .hero-section h1 span { color: var(--primary); font-style: italic; }
-
         .hero-section p {
             color: #666;
             font-size: 1rem;
@@ -98,14 +89,14 @@
             margin: auto;
         }
 
-        /* Main Container */
+        /* Container */
         .container {
             max-width: 750px;
             margin: 0 auto;
             padding: 0 20px 80px;
         }
 
-        /* Like Dislike Card */
+        /* Rating Card */
         .rating-card {
             background: white;
             border-radius: 24px;
@@ -114,18 +105,8 @@
             margin-bottom: 30px;
             text-align: center;
         }
-
-        .rating-card h2 {
-            font-size: 1.2rem;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .rating-card p {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 35px;
-        }
+        .rating-card h2 { font-size: 1.2rem; color: var(--dark); margin-bottom: 10px; }
+        .rating-card > p { color: #888; font-size: 0.9rem; margin-bottom: 35px; }
 
         .vote-buttons {
             display: flex;
@@ -133,7 +114,6 @@
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .vote-btn {
             display: flex;
             flex-direction: column;
@@ -151,23 +131,18 @@
             transition: all 0.25s ease;
             min-width: 140px;
         }
-
         .vote-btn i { font-size: 2rem; transition: transform 0.2s; }
-
         .vote-btn:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-
         .vote-btn.like:hover, .vote-btn.like.active {
             border-color: var(--like);
             background: #f0fff6;
             color: var(--like);
         }
-
         .vote-btn.dislike:hover, .vote-btn.dislike.active {
             border-color: var(--dislike);
             background: #fff5f5;
             color: var(--dislike);
         }
-
         .vote-btn.like.active i { animation: bounce 0.4s ease; }
         .vote-btn.dislike.active i { animation: shake 0.4s ease; }
 
@@ -176,21 +151,15 @@
             40% { transform: translateY(-12px); }
             70% { transform: translateY(-5px); }
         }
-
         @keyframes shake {
             0%, 100% { transform: rotate(0); }
             25% { transform: rotate(-15deg); }
             75% { transform: rotate(15deg); }
         }
 
-        /* Vote Stats Bar */
-        .vote-stats {
-            display: none;
-            margin-top: 10px;
-        }
-
+        /* Vote Stats */
+        .vote-stats { display: none; margin-top: 10px; }
         .vote-stats.show { display: block; }
-
         .stats-bar {
             display: flex;
             height: 10px;
@@ -199,17 +168,14 @@
             margin-bottom: 10px;
             background: #f0f0f0;
         }
-
         .bar-like { background: var(--like); transition: width 0.6s ease; }
         .bar-dislike { background: var(--dislike); transition: width 0.6s ease; }
-
         .stats-labels {
             display: flex;
             justify-content: space-between;
             font-size: 0.82rem;
             color: #888;
         }
-
         .stats-labels span:first-child { color: var(--like); font-weight: 600; }
         .stats-labels span:last-child { color: var(--dislike); font-weight: 600; }
 
@@ -220,26 +186,15 @@
             padding: 40px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.08);
         }
+        .komentar-card h2 { font-size: 1.2rem; color: var(--dark); margin-bottom: 5px; }
+        .komentar-card > p { color: #888; font-size: 0.88rem; margin-bottom: 25px; }
 
-        .komentar-card h2 {
-            font-size: 1.2rem;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-
-        .komentar-card > p {
-            color: #888;
-            font-size: 0.88rem;
-            margin-bottom: 25px;
-        }
-
-        /* Form Komentar */
+        /* Identity Toggle */
         .identity-toggle {
             display: flex;
             gap: 10px;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
-
         .id-btn {
             flex: 1;
             padding: 10px;
@@ -248,221 +203,200 @@
             background: white;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
-            font-size: 0.85rem;
             font-weight: 600;
-            color: #999;
+            font-size: 0.85rem;
+            color: #aaa;
             transition: 0.2s;
         }
+        .id-btn.active { border-color: var(--primary); color: var(--primary); background: #ebf5fb; }
 
-        .id-btn.active {
-            border-color: var(--primary);
-            background: #ebf5fb;
-            color: var(--primary);
-        }
-
-        .nama-field {
-            display: none;
-            margin-bottom: 15px;
-        }
-
+        /* Nama Field */
+        .nama-field { display: none; margin-bottom: 12px; }
         .nama-field.show { display: block; }
 
         .form-input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 12px 16px;
             border: 2px solid #eee;
             border-radius: 12px;
             font-family: 'Poppins', sans-serif;
             font-size: 0.9rem;
-            color: var(--dark);
             transition: 0.2s;
-            outline: none;
+            resize: none;
+            margin-bottom: 12px;
         }
-
-        .form-input:focus { border-color: var(--primary); }
-
-        textarea.form-input {
-            resize: vertical;
-            min-height: 100px;
-            margin-bottom: 15px;
-        }
+        .form-input:focus { border-color: var(--primary); outline: none; }
 
         .btn-kirim {
             width: 100%;
             padding: 14px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #2980b9);
             color: white;
             border: none;
             border-radius: 12px;
             font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
             font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-
-        .btn-kirim:hover { background: #2980b9; transform: translateY(-2px); }
-        .btn-kirim:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+        .btn-kirim:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(52,152,219,0.3); }
+        .btn-kirim:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         /* Divider */
         .divider {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 30px 0 25px;
-            color: #ccc;
-            font-size: 0.85rem;
+            text-align: center;
+            margin: 30px 0 20px;
+            position: relative;
+            color: #aaa;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-
         .divider::before, .divider::after {
             content: '';
-            flex: 1;
+            position: absolute;
+            top: 50%;
+            width: 35%;
             height: 1px;
             background: #eee;
         }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
 
-        /* Daftar Komentar */
-        .komentar-list { display: flex; flex-direction: column; gap: 15px; }
-
+        /* Komentar List */
+        .komentar-list { display: flex; flex-direction: column; gap: 14px; }
         .komentar-item {
             background: var(--light);
             border-radius: 14px;
-            padding: 18px 20px;
-            animation: fadeInUp 0.3s ease;
+            padding: 16px 20px;
+            border-left: 3px solid var(--primary);
         }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .komentar-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
         }
-
         .komentar-nama {
+            font-size: 0.85rem;
             font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--dark);
+            color: var(--primary);
             display: flex;
             align-items: center;
             gap: 6px;
         }
-
-        .komentar-nama .anonim-badge {
-            background: #eee;
-            color: #888;
+        .anonim-badge {
+            background: #ebf5fb;
+            color: var(--primary);
             font-size: 0.7rem;
             padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 500;
+            border-radius: 10px;
+            font-weight: 600;
         }
-
-        .komentar-waktu {
-            font-size: 0.78rem;
-            color: #aaa;
-        }
-
-        .komentar-isi {
-            font-size: 0.88rem;
-            color: #555;
-            line-height: 1.6;
-        }
+        .komentar-waktu { font-size: 0.75rem; color: #bbb; }
+        .komentar-isi { font-size: 0.88rem; color: #555; line-height: 1.6; }
 
         .empty-komentar {
             text-align: center;
             color: #bbb;
-            padding: 30px 0;
-            font-size: 0.9rem;
+            padding: 30px;
+            font-size: 0.88rem;
         }
+        .empty-komentar i { font-size: 2rem; display: block; margin-bottom: 10px; opacity: 0.4; }
 
-        .empty-komentar i { font-size: 2.5rem; display: block; margin-bottom: 10px; }
-
-        /* Loading */
+        /* Loading dots */
         .loading-dots {
             display: flex;
             justify-content: center;
             gap: 6px;
-            padding: 20px 0;
+            padding: 20px;
         }
-
         .loading-dots span {
             width: 8px; height: 8px;
             background: var(--primary);
             border-radius: 50%;
-            animation: dot-bounce 1.2s infinite;
+            animation: dotBounce 1.2s infinite;
+            opacity: 0.4;
         }
-
         .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
         .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes dot-bounce {
-            0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.4; }
+            40% { transform: scale(1.2); opacity: 1; }
         }
 
-        /* Success toast */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 30px;
             left: 50%;
-            transform: translateX(-50%) translateY(100px);
+            transform: translateX(-50%) translateY(80px);
             background: var(--dark);
             color: white;
-            padding: 14px 28px;
+            padding: 14px 24px;
             border-radius: 50px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 500;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 999;
             display: flex;
             align-items: center;
             gap: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            z-index: 9999;
+            white-space: nowrap;
         }
-
         .toast.show { transform: translateX(-50%) translateY(0); }
-        .toast i { color: var(--secondary); }
+
+        @media (max-width: 600px) {
+            .hero-section h1 { font-size: 2rem; }
+            .vote-btn { padding: 16px 24px; min-width: 110px; }
+            .rating-card, .komentar-card { padding: 24px; }
+            .navbar { padding: 14px 5%; }
+        }
     </style>
 </head>
 <body>
 
 <nav class="navbar">
     <a href="index.html" class="logo"><i class="fas fa-heart-pulse"></i> BK-Care</a>
-    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Kembali</a>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Kembali ke Beranda</a>
 </nav>
 
 <div class="hero-section">
-    <div class="tag">⭐ Penilaian</div>
-    <h1>Bagaimana <span>Pengalamanmu</span>?</h1>
-    <p>Pendapatmu sangat berarti untuk meningkatkan layanan BK-Care.</p>
+    <div class="tag">⭐ Penilaian Pengguna</div>
+    <h1>Suaramu <span>Berarti</span></h1>
+    <p>Bantu kami berkembang dengan memberikan penilaian jujurmu tentang layanan BK-Care.</p>
 </div>
 
 <div class="container">
-
-    <!-- Card Like / Dislike -->
+    <!-- Like / Dislike Card -->
     <div class="rating-card">
-        <h2>Apakah website ini membantu kamu?</h2>
-        <p>Pilih salah satu penilaian di bawah ini</p>
+        <h2>Bagaimana pengalamanmu menggunakan BK-Care?</h2>
+        <p>Pilih salah satu untuk memberikan penilaianmu. Kamu hanya bisa memilih sekali.</p>
 
         <div class="vote-buttons">
             <button class="vote-btn like" id="btnLike" onclick="vote('like')">
                 <i class="fas fa-thumbs-up"></i>
-                <span id="likeCount">0 Suka</span>
+                <span id="likeCount">-- Suka</span>
             </button>
             <button class="vote-btn dislike" id="btnDislike" onclick="vote('dislike')">
                 <i class="fas fa-thumbs-down"></i>
-                <span id="dislikeCount">0 Tidak Suka</span>
+                <span id="dislikeCount">-- Tidak Suka</span>
             </button>
         </div>
 
         <div class="vote-stats" id="voteStats">
             <div class="stats-bar">
-                <div class="bar-like" id="barLike" style="width: 50%"></div>
-                <div class="bar-dislike" id="barDislike" style="width: 50%"></div>
+                <div class="bar-like" id="barLike" style="width:50%"></div>
+                <div class="bar-dislike" id="barDislike" style="width:50%"></div>
             </div>
             <div class="stats-labels">
                 <span id="likePct">50%</span>
@@ -471,12 +405,11 @@
         </div>
     </div>
 
-    <!-- Card Komentar -->
+    <!-- Komentar Card -->
     <div class="komentar-card">
-        <h2><i class="fas fa-comments" style="color: var(--primary); margin-right: 8px;"></i>Komentar & Masukan</h2>
+        <h2><i class="fas fa-comments" style="color:var(--primary);margin-right:8px"></i>Komentar & Masukan</h2>
         <p>Bagikan pengalaman atau saranmu untuk website ini.</p>
 
-        <!-- Toggle Identitas -->
         <div class="identity-toggle">
             <button class="id-btn active" id="btnAnonim" onclick="setIdentitas('anonim')">
                 <i class="fas fa-user-secret"></i> Anonim
@@ -486,7 +419,6 @@
             </button>
         </div>
 
-        <!-- Field Nama (muncul jika pilih Isi Nama) -->
         <div class="nama-field" id="namaField">
             <input type="text" id="inputNama" class="form-input" placeholder="Nama kamu...">
         </div>
@@ -498,44 +430,36 @@
 
         <div class="divider">Komentar Terbaru</div>
 
-        <!-- Daftar Komentar -->
         <div class="komentar-list" id="komentarList">
-            <div class="loading-dots">
-                <span></span><span></span><span></span>
-            </div>
+            <div class="loading-dots"><span></span><span></span><span></span></div>
         </div>
     </div>
 </div>
 
-<!-- Toast Notifikasi -->
+<!-- Toast -->
 <div class="toast" id="toast">
     <i class="fas fa-check-circle"></i>
     <span id="toastMsg">Berhasil!</span>
 </div>
 
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
     let identitasMode = 'anonim';
     let userVote = localStorage.getItem('bkcare_vote') || null;
 
-    // ============================
-    // Identitas Toggle
-    // ============================
     function setIdentitas(mode) {
         identitasMode = mode;
-        const namaField = document.getElementById('namaField');
         document.getElementById('btnAnonim').classList.toggle('active', mode === 'anonim');
         document.getElementById('btnNama').classList.toggle('active', mode === 'nama');
-        namaField.classList.toggle('show', mode === 'nama');
+        document.getElementById('namaField').classList.toggle('show', mode === 'nama');
     }
 
-    // ============================
-    // Toast Notification
-    // ============================
     function showToast(msg, isError = false) {
         const toast = document.getElementById('toast');
-        const toastMsg = document.getElementById('toastMsg');
+        document.getElementById('toastMsg').textContent = msg;
         const icon = toast.querySelector('i');
-        toastMsg.textContent = msg;
         icon.className = isError ? 'fas fa-times-circle' : 'fas fa-check-circle';
         icon.style.color = isError ? '#e74c3c' : '#2ecc71';
         toast.classList.add('show');
@@ -543,15 +467,16 @@
     }
 
     // ============================
-    // VOTE - Like / Dislike
+    // VOTE → SUPABASE
     // ============================
     async function loadVotes() {
         try {
-            const res = await fetch('/api/penilaian/votes');
-            const data = await res.json();
-            updateVoteUI(data.likes, data.dislikes);
-
-            // Tandai tombol jika sudah pernah vote
+            const { data, error } = await db.from('penilaian_votes').select('type');
+            if (error) throw error;
+            updateVoteUI(
+                data.filter(v => v.type === 'like').length,
+                data.filter(v => v.type === 'dislike').length
+            );
             if (userVote) {
                 document.getElementById(userVote === 'like' ? 'btnLike' : 'btnDislike').classList.add('active');
                 document.getElementById('voteStats').classList.add('show');
@@ -579,43 +504,38 @@
             showToast('Kamu sudah memberikan penilaian!', true);
             return;
         }
-
         try {
-            const res = await fetch('/api/penilaian/vote', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type })
-            });
-            const data = await res.json();
+            const { error } = await db.from('penilaian_votes').insert([{ type }]);
+            if (error) throw error;
 
-            if (res.ok) {
-                userVote = type;
-                localStorage.setItem('bkcare_vote', type);
+            userVote = type;
+            localStorage.setItem('bkcare_vote', type);
 
-                // Update UI
-                document.getElementById('btnLike').classList.remove('active');
-                document.getElementById('btnDislike').classList.remove('active');
-                document.getElementById(type === 'like' ? 'btnLike' : 'btnDislike').classList.add('active');
-                document.getElementById('voteStats').classList.add('show');
+            document.getElementById('btnLike').classList.remove('active');
+            document.getElementById('btnDislike').classList.remove('active');
+            document.getElementById(type === 'like' ? 'btnLike' : 'btnDislike').classList.add('active');
+            document.getElementById('voteStats').classList.add('show');
 
-                updateVoteUI(data.likes, data.dislikes);
-                showToast(type === 'like' ? '👍 Terima kasih atas penilaianmu!' : '👎 Terima kasih, kami akan terus berbenah!');
-            }
+            await loadVotes();
+            showToast(type === 'like' ? '👍 Terima kasih atas penilaianmu!' : '👎 Terima kasih, kami akan terus berbenah!');
         } catch (e) {
             showToast('Gagal mengirim penilaian.', true);
         }
     }
 
     // ============================
-    // KOMENTAR
+    // KOMENTAR → SUPABASE
     // ============================
     async function loadKomentar() {
         const list = document.getElementById('komentarList');
         try {
-            const res = await fetch('/api/penilaian/komentar');
-            const data = await res.json();
+            const { data, error } = await db
+                .from('penilaian_komentar')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 list.innerHTML = `
                     <div class="empty-komentar">
                         <i class="fas fa-comment-dots"></i>
@@ -630,13 +550,12 @@
                     day: 'numeric', month: 'long', year: 'numeric',
                     hour: '2-digit', minute: '2-digit'
                 });
-
                 const el = document.createElement('div');
                 el.className = 'komentar-item';
                 el.innerHTML = `
                     <div class="komentar-meta">
                         <div class="komentar-nama">
-                            <i class="fas fa-${item.nama === 'Anonim' ? 'user-secret' : 'user'}" style="color: var(--primary)"></i>
+                            <i class="fas fa-${item.nama === 'Anonim' ? 'user-secret' : 'user'}" style="color:var(--primary)"></i>
                             ${item.nama}
                             ${item.nama === 'Anonim' ? '<span class="anonim-badge">anonim</span>' : ''}
                         </div>
@@ -647,7 +566,7 @@
                 list.appendChild(el);
             });
         } catch (e) {
-            list.innerHTML = '<div class="empty-komentar"><i class="fas fa-exclamation-circle"></i>Gagal memuat komentar.</div>';
+            list.innerHTML = '<div class="empty-komentar"><i class="fas fa-exclamation-circle"></i> Gagal memuat komentar.</div>';
         }
     }
 
@@ -664,23 +583,18 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
 
         try {
-            const res = await fetch('/api/penilaian/komentar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nama: nama || 'Anonim', komentar })
-            });
+            const { error } = await db.from('penilaian_komentar').insert([{
+                nama: nama || 'Anonim',
+                komentar
+            }]);
+            if (error) throw error;
 
-            if (res.ok) {
-                document.getElementById('inputKomentar').value = '';
-                document.getElementById('inputNama').value = '';
-                showToast('Komentar berhasil dikirim! 🎉');
-                loadKomentar();
-            } else {
-                const err = await res.json();
-                showToast(err.error || 'Gagal mengirim komentar.', true);
-            }
+            document.getElementById('inputKomentar').value = '';
+            document.getElementById('inputNama').value = '';
+            showToast('Komentar berhasil dikirim! 🎉');
+            loadKomentar();
         } catch (e) {
-            showToast('Gagal terhubung ke server.', true);
+            showToast('Gagal mengirim komentar: ' + e.message, true);
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Komentar';

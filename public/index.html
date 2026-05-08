@@ -16,7 +16,7 @@
             <li><a href="javascript:void(0)" onclick="showPage('home')" id="link-home">Beranda</a></li>
             <li><a href="javascript:void(0)" onclick="showPage('layanan')" id="link-layanan">Layanan Konseling Digital</a></li>
             <li><a href="javascript:void(0)" onclick="showPage('mental')" id="link-mental">Kesehatan Mental</a></li>
-            <li><a href="/media" id="link-media"><i class="fas fa-photo-video"></i> Poster & Booklet</a></li>
+            <li><a href="media.html" id="link-media"><i class="fas fa-photo-video"></i> Poster & Booklet</a></li>
             <li><a href="javascript:void(0)" onclick="showPage('profil')" id="link-profil">Profil BK</a></li>
             <li><a href="javascript:void(0)" onclick="loginGuru()" class="nav-admin"><i class="fas fa-user-lock"></i> Guru BK</a></li>
         </ul>
@@ -80,7 +80,7 @@
                         </div>
                     </div>
                     <div class="penilaian-cta">
-                        <button class="btn-penilaian" onclick="window.location.href='/penilaian'">
+                        <button class="btn-penilaian" onclick="window.location.href='penilaian.html'">
                             <i class="fas fa-star"></i> Berikan Penilaianmu
                         </button>
                     </div>
@@ -207,6 +207,11 @@
         </div>
     </div>
 
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Konfigurasi Supabase -->
+    <script src="supabase-config.js"></script>
+    <!-- Script Utama -->
     <script src="script.js"></script>
 </body>
 </html>
