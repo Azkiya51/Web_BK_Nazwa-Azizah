@@ -454,14 +454,23 @@
     </div>
 </div>
 
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
     let allMedia = [];
     let currentFilter = 'semua';
 
     async function loadMedia() {
         try {
-            const res = await fetch('/api/media');
-            allMedia = await res.json();
+            const { data, error } = await db
+                .from('media')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+
+            allMedia = data || [];
             updateCounts();
             renderMedia(allMedia);
         } catch (e) {
@@ -469,7 +478,7 @@
                 <div class="empty-state">
                     <i class="fas fa-exclamation-circle" style="color:#e74c3c"></i>
                     <h3>Gagal memuat data</h3>
-                    <p>Coba muat ulang halaman.</p>
+                    <p>Coba muat ulang halaman. (${e.message})</p>
                 </div>`;
         }
     }
@@ -484,18 +493,14 @@
 
     function filterMedia(type) {
         currentFilter = type;
-
-        // Update tab UI
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('tab-' + type).classList.add('active');
-
         const filtered = type === 'semua' ? allMedia : allMedia.filter(m => m.type === type);
         renderMedia(filtered);
     }
 
     function renderMedia(data) {
         const grid = document.getElementById('mediaGrid');
-
         if (data.length === 0) {
             grid.innerHTML = `
                 <div class="empty-state">
@@ -505,16 +510,13 @@
                 </div>`;
             return;
         }
-
         grid.innerHTML = '';
         data.forEach((item, i) => {
             const card = document.createElement('div');
             card.className = 'media-card';
             card.style.animationDelay = (i * 0.06) + 's';
             card.style.opacity = '0';
-
             const hasFile = item.file_url && item.file_url.trim() !== '';
-
             card.innerHTML = `
                 <div class="media-img-wrap" onclick="openLightbox('${item.image_url}', '${escapeHtml(item.judul)}')">
                     <img src="${item.image_url}" alt="${escapeHtml(item.judul)}" loading="lazy"
@@ -564,14 +566,18 @@
         }
     });
 
-    // Catat kunjungan
+    // Catat kunjungan → Supabase
     async function recordView() {
         try {
-            await fetch('/api/views/record', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ page: '/media' })
-            });
+            const key = 'view_recorded_/media';
+            if (sessionStorage.getItem(key)) return;
+            await db.from('page_views').insert([{
+                ip_address: 'client',
+                user_agent: navigator.userAgent,
+                page: '/media',
+                visited_at: new Date().toISOString()
+            }]);
+            sessionStorage.setItem(key, '1');
         } catch(e) {}
     }
 
