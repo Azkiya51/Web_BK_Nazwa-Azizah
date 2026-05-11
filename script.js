@@ -231,27 +231,57 @@ document.getElementById('adminPass')?.addEventListener('keypress', function(e) {
 // ============================
 async function recordPageView() {
     try {
-        // Gunakan sessionStorage agar tidak spam per sesi
         const key = 'view_recorded_' + (window.location.pathname || '/');
-        if (sessionStorage.getItem(key)) return;
-
-        await db.from('page_views').insert([{
-            ip_address: 'client',
-            user_agent: navigator.userAgent,
-            page: window.location.pathname || '/',
-            visited_at: new Date().toISOString()
-        }]);
-
-        sessionStorage.setItem(key, '1');
+        if (!sessionStorage.getItem(key)) {
+            await db.from('page_views').insert([{
+                ip_address: 'client',
+                user_agent: navigator.userAgent,
+                page: window.location.pathname || '/',
+                visited_at: new Date().toISOString()
+            }]);
+            sessionStorage.setItem(key, '1');
+        }
     } catch (e) {
         console.log('View record skipped:', e.message);
+    }
+}
+
+async function loadViewsCounter() {
+    const el = document.getElementById('viewsCounter');
+    if (!el) return;
+    try {
+        const { count, error } = await db
+            .from('page_views')
+            .select('*', { count: 'exact', head: true });
+        if (error) throw error;
+
+        // Animate number in
+        el.innerHTML = '';
+        const target = count || 0;
+        const span = document.createElement('span');
+        span.textContent = '0';
+        el.appendChild(span);
+
+        const duration = 1200;
+        const start = performance.now();
+        function update(time) {
+            const elapsed = time - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            span.textContent = Math.round(target * eased).toLocaleString('id-ID');
+            if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+    } catch (e) {
+        if (el) el.textContent = '–';
     }
 }
 
 // ============================
 // INIT
 // ============================
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+    await recordPageView();   // catat dulu, baru load counter biar terhitung
     loadPenilaianBeranda();
-    recordPageView();
+    loadViewsCounter();
 });
