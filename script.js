@@ -278,10 +278,56 @@ async function loadViewsCounter() {
 }
 
 // ============================
+// LOAD JURNAL DARI SUPABASE
+// ============================
+async function loadJurnalBeranda() {
+    const grid = document.getElementById('jurnalGrid');
+    if (!grid) return;
+    try {
+        const { data, error } = await db
+            .from('jurnal')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            grid.innerHTML = `
+                <div class="journal-card" style="text-align:center;color:#bbb;padding:40px 20px;grid-column:1/-1">
+                    <i class="fas fa-book-open" style="font-size:2rem;display:block;margin-bottom:10px;opacity:0.3"></i>
+                    Belum ada jurnal. Admin belum menambahkan konten.
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = '';
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'journal-card';
+            card.innerHTML = `
+                <div class="journal-tag">${item.kategori}</div>
+                <h3>${item.judul}</h3>
+                <p>${item.ringkasan}</p>
+                ${item.url
+                    ? `<a href="${item.url}" target="_blank" class="read-more">Baca Jurnal Asli <i class="fas fa-external-link-alt"></i></a>`
+                    : `<span style="font-size:0.8rem;color:#bbb"><i class="fas fa-link-slash"></i> Tidak ada link</span>`
+                }
+            `;
+            grid.appendChild(card);
+        });
+    } catch (e) {
+        if (grid) grid.innerHTML = `
+            <div class="journal-card" style="color:#e74c3c;grid-column:1/-1;text-align:center;padding:30px">
+                <i class="fas fa-exclamation-circle"></i> Gagal memuat jurnal: ${e.message}
+            </div>`;
+    }
+}
+
+// ============================
 // INIT
 // ============================
 window.addEventListener('load', async () => {
     await recordPageView();   // catat dulu, baru load counter biar terhitung
     loadPenilaianBeranda();
     loadViewsCounter();
+    loadJurnalBeranda();
 });
