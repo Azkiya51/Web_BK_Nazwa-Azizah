@@ -241,7 +241,6 @@
 
         .type-badge.poster { background: #ebf5fb; color: #2980b9; }
         .type-badge.booklet { background: #eafaf1; color: #27ae60; }
-        .type-badge.jurnal  { background: #f5eef8; color: #8e44ad; }
 
         .judul-cell {
             max-width: 200px;
@@ -313,6 +312,55 @@
         .admin-toast.show { transform: translateY(0); opacity: 1; }
         .admin-toast.success i { color: #2ecc71; }
         .admin-toast.error i { color: #e74c3c; }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed #d0d7de;
+            border-radius: 12px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #fafafa;
+            transition: 0.2s;
+        }
+        .upload-area:hover { border-color: var(--primary); background: #f0f7ff; }
+        .upload-area.dragover { border-color: var(--primary); background: #e8f4fd; }
+        .upload-area.has-file { border-color: #2ecc71; background: #f0fff4; }
+        .upload-icon { font-size: 2rem; color: #bbb; display: block; margin-bottom: 8px; }
+        .upload-text { font-weight: 600; color: #555; font-size: 0.88rem; }
+        .upload-hint { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+
+        .btn-remove-img {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-progress {
+            height: 6px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #2ecc71);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s;
+        }
 
         /* Preview gambar */
         .img-preview-wrap {
@@ -440,12 +488,24 @@
                 </div>
             </div>
             <div class="form-group" style="margin-bottom:16px">
-                <label>URL Gambar / Thumbnail <span style="color:red">*</span></label>
-                <input type="url" id="mImageUrl" placeholder="https://..." oninput="previewImg(this.value)">
-                <span class="form-hint">Gunakan link gambar dari Google Drive, Canva, Imgur, atau Supabase Storage.</span>
-                <div class="img-preview-wrap" id="imgPreviewWrap">
-                    <img id="imgPreview" src="" alt="Preview">
+                <label>Upload Gambar / Thumbnail <span style="color:red">*</span></label>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('mImageFile').click()">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <div class="upload-text">Klik untuk pilih gambar</div>
+                    <div class="upload-hint">PNG, JPG, WEBP — maks. 5MB</div>
+                    <input type="file" id="mImageFile" accept="image/png,image/jpeg,image/webp"
+                           style="display:none" onchange="handleImageFile(this)">
                 </div>
+                <div class="img-preview-wrap" id="imgPreviewWrap" style="display:none;margin-top:10px;position:relative;display:inline-block">
+                    <img id="imgPreview" src="" alt="Preview" style="width:80px;height:100px;object-fit:cover;border-radius:8px;border:2px solid var(--primary)">
+                    <button type="button" class="btn-remove-img" onclick="removeImage()" title="Hapus gambar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="upload-progress" id="uploadProgress" style="display:none;margin-top:8px">
+                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                </div>
+                <div class="form-hint" id="uploadStatus" style="margin-top:4px"></div>
             </div>
             <div class="form-group" style="margin-bottom:16px">
                 <label>URL File Download <span style="color:#aaa;font-weight:400">(opsional)</span></label>
@@ -495,76 +555,75 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- ===================== TAB: JURNAL ===================== -->
-<div class="admin-tab-panel" id="panel-jurnal">
+    <!-- ===================== TAB: JURNAL ===================== -->
+    <div class="admin-tab-panel" id="panel-jurnal">
 
-    <!-- Form Tambah Jurnal -->
-    <div class="media-form-card">
-        <h3><i class="fas fa-plus-circle"></i> Tambah Jurnal / Artikel</h3>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Judul <span style="color:red">*</span></label>
-                <input type="text" id="jJudul" placeholder="cth. Manajemen Stres Akademik">
+        <!-- Form Tambah Jurnal -->
+        <div class="media-form-card">
+            <h3><i class="fas fa-plus-circle"></i> Tambah Jurnal / Artikel</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Judul <span style="color:red">*</span></label>
+                    <input type="text" id="jJudul" placeholder="cth. Manajemen Stres Akademik">
+                </div>
+                <div class="form-group">
+                    <label>Kategori <span style="color:red">*</span></label>
+                    <select id="jKategori">
+                        <option value="Jurnal Psikologi">📄 Jurnal Psikologi</option>
+                        <option value="Artikel Kesehatan Mental">🧠 Artikel Kesehatan Mental</option>
+                        <option value="Tips & Self-Help">💡 Tips & Self-Help</option>
+                        <option value="Penelitian">🔬 Penelitian</option>
+                        <option value="Lainnya">📌 Lainnya</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Kategori <span style="color:red">*</span></label>
-                <select id="jKategori">
-                    <option value="Jurnal Psikologi">📄 Jurnal Psikologi</option>
-                    <option value="Artikel Kesehatan Mental">🧠 Artikel Kesehatan Mental</option>
-                    <option value="Tips & Self-Help">💡 Tips & Self-Help</option>
-                    <option value="Penelitian">🔬 Penelitian</option>
-                    <option value="Lainnya">📌 Lainnya</option>
-                </select>
+            <div class="form-group" style="margin-bottom:16px">
+                <label>Ringkasan <span style="color:red">*</span></label>
+                <textarea id="jRingkasan" placeholder="Tulis ringkasan singkat isi jurnal/artikel ini..."></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:20px">
+                <label>URL Link Jurnal <span style="color:#aaa;font-weight:400">(opsional)</span></label>
+                <input type="url" id="jUrl" placeholder="https://scholar.google.com/...">
+                <span class="form-hint">Link ke jurnal asli, Google Scholar, atau sumber lainnya.</span>
+            </div>
+            <button class="btn-tambah-media" id="btnTambahJurnal" onclick="tambahJurnal()">
+                <i class="fas fa-cloud-upload-alt"></i> Simpan Jurnal
+            </button>
+        </div>
+
+        <!-- Daftar Jurnal -->
+        <div class="media-list-card">
+            <div class="media-list-header">
+                <h3>
+                    <i class="fas fa-book-open"></i> Daftar Jurnal
+                    <span id="jurnalCountBadge" style="font-size:0.78rem;background:#eafaf1;color:#27ae60;padding:3px 10px;border-radius:20px;font-weight:600;border:1px solid #a9dfbf;margin-left:6px">0</span>
+                </h3>
+            </div>
+            <div style="overflow-x:auto">
+                <table class="media-table">
+                    <thead>
+                        <tr>
+                            <th>Judul</th>
+                            <th>Kategori</th>
+                            <th>Ringkasan</th>
+                            <th>Link</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jurnalTableBody">
+                        <tr class="media-empty-row">
+                            <td colspan="6">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Memuat data jurnal...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="form-group" style="margin-bottom:16px">
-            <label>Ringkasan <span style="color:red">*</span></label>
-            <textarea id="jRingkasan" placeholder="Tulis ringkasan singkat isi jurnal/artikel ini..."></textarea>
-        </div>
-        <div class="form-group" style="margin-bottom:20px">
-            <label>URL Link Jurnal <span style="color:#aaa;font-weight:400">(opsional)</span></label>
-            <input type="url" id="jUrl" placeholder="https://scholar.google.com/...">
-            <span class="form-hint">Link ke jurnal asli, Google Scholar, atau sumber lainnya. Kosongkan jika tidak ada.</span>
-        </div>
-        <button class="btn-tambah-media" id="btnTambahJurnal" onclick="tambahJurnal()">
-            <i class="fas fa-cloud-upload-alt"></i> Simpan Jurnal
-        </button>
     </div>
-
-    <!-- Daftar Jurnal -->
-    <div class="media-list-card">
-        <div class="media-list-header">
-            <h3>
-                <i class="fas fa-book-open"></i> Daftar Jurnal
-                <span id="jurnalCountBadge" style="font-size:0.78rem;background:#eafaf1;color:#27ae60;padding:3px 10px;border-radius:20px;font-weight:600;border:1px solid #a9dfbf;margin-left:6px">0</span>
-            </h3>
-        </div>
-        <div style="overflow-x:auto">
-            <table class="media-table">
-                <thead>
-                    <tr>
-                        <th>Judul</th>
-                        <th>Kategori</th>
-                        <th>Ringkasan</th>
-                        <th>Link</th>
-                        <th>Tanggal</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="jurnalTableBody">
-                    <tr class="media-empty-row">
-                        <td colspan="6">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            Memuat data jurnal...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 </div>
 
 <!-- Toast -->
@@ -786,20 +845,25 @@
     // MEDIA — TAMBAH
     // ============================
     async function tambahMedia() {
-        const judul    = document.getElementById('mJudul').value.trim();
-        const type     = document.getElementById('mType').value;
-        const imageUrl = document.getElementById('mImageUrl').value.trim();
-        const fileUrl  = document.getElementById('mFileUrl').value.trim();
+        const judul     = document.getElementById('mJudul').value.trim();
+        const type      = document.getElementById('mType').value;
+        const fileUrl   = document.getElementById('mFileUrl').value.trim();
         const deskripsi = document.getElementById('mDeskripsi').value.trim();
 
-        if (!judul)    { showToast('Judul wajib diisi!', 'error'); return; }
-        if (!imageUrl) { showToast('URL gambar wajib diisi!', 'error'); return; }
+        if (!judul)             { showToast('Judul wajib diisi!', 'error'); return; }
+        if (!selectedImageFile) { showToast('Pilih gambar thumbnail terlebih dahulu!', 'error'); return; }
 
         const btn = document.getElementById('btnTambahMedia');
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengupload...';
 
         try {
+            // 1. Upload gambar ke Supabase Storage dulu
+            const imageUrl = await uploadImageToStorage(selectedImageFile);
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+            // 2. Simpan data ke tabel media
             const { error } = await db.from('media').insert([{
                 judul,
                 type,
@@ -810,9 +874,9 @@
             if (error) throw error;
 
             // Reset form
-            ['mJudul','mImageUrl','mFileUrl','mDeskripsi'].forEach(id => document.getElementById(id).value = '');
+            ['mJudul','mFileUrl','mDeskripsi'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('mType').value = 'poster';
-            document.getElementById('imgPreviewWrap').style.display = 'none';
+            removeImage();
 
             showToast(`${type === 'poster' ? 'Poster' : 'Booklet'} berhasil ditambahkan! 🎉`);
             loadMedia();
@@ -840,19 +904,120 @@
     }
 
     // ============================
-    // PREVIEW GAMBAR
+    // UPLOAD GAMBAR → SUPABASE STORAGE
     // ============================
-    function previewImg(url) {
-        const wrap = document.getElementById('imgPreviewWrap');
-        const img  = document.getElementById('imgPreview');
-        if (url && url.startsWith('http')) {
-            img.src = url;
-            img.onerror = () => { wrap.style.display = 'none'; };
-            img.onload  = () => { wrap.style.display = 'block'; };
-        } else {
-            wrap.style.display = 'none';
+    let selectedImageFile = null;
+    let uploadedImageUrl  = null;
+
+    function handleImageFile(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Validasi ukuran (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('Ukuran gambar maksimal 5MB!', 'error');
+            input.value = '';
+            return;
         }
+
+        selectedImageFile = file;
+        uploadedImageUrl  = null;
+
+        // Preview lokal
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const wrap = document.getElementById('imgPreviewWrap');
+            const img  = document.getElementById('imgPreview');
+            img.src = e.target.result;
+            wrap.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+
+        // Ubah tampilan upload area
+        const area = document.getElementById('uploadArea');
+        area.classList.add('has-file');
+        area.querySelector('.upload-text').textContent = file.name;
+        area.querySelector('.upload-hint').textContent = (file.size / 1024).toFixed(1) + ' KB';
+        area.querySelector('.upload-icon').className = 'fas fa-check-circle upload-icon';
+        area.querySelector('.upload-icon').style.color = '#2ecc71';
+
+        document.getElementById('uploadStatus').textContent = '';
     }
+
+    function removeImage() {
+        selectedImageFile = null;
+        uploadedImageUrl  = null;
+        document.getElementById('mImageFile').value = '';
+        document.getElementById('imgPreviewWrap').style.display = 'none';
+
+        const area = document.getElementById('uploadArea');
+        area.classList.remove('has-file');
+        area.querySelector('.upload-text').textContent = 'Klik untuk pilih gambar';
+        area.querySelector('.upload-hint').textContent = 'PNG, JPG, WEBP — maks. 5MB';
+        const icon = area.querySelector('.upload-icon');
+        icon.className = 'fas fa-cloud-upload-alt upload-icon';
+        icon.style.color = '#bbb';
+        document.getElementById('uploadStatus').textContent = '';
+    }
+
+    async function uploadImageToStorage(file) {
+        const ext      = file.name.split('.').pop();
+        const fileName = `media/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+        // Tampilkan progress
+        const progressWrap = document.getElementById('uploadProgress');
+        const progressBar  = document.getElementById('uploadProgressBar');
+        const statusEl     = document.getElementById('uploadStatus');
+        progressWrap.style.display = 'block';
+        progressBar.style.width    = '30%';
+        statusEl.textContent       = 'Mengupload gambar...';
+
+        const { data, error } = await db.storage
+            .from('media-images')
+            .upload(fileName, file, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: file.type
+            });
+
+        progressBar.style.width = '100%';
+
+        if (error) {
+            progressWrap.style.display = 'none';
+            throw new Error('Upload gagal: ' + error.message);
+        }
+
+        // Ambil public URL
+        const { data: urlData } = db.storage
+            .from('media-images')
+            .getPublicUrl(fileName);
+
+        progressWrap.style.display = 'none';
+        statusEl.textContent       = '✅ Gambar berhasil diupload!';
+        statusEl.style.color       = '#27ae60';
+
+        return urlData.publicUrl;
+    }
+
+    // Drag & drop support
+    document.addEventListener('DOMContentLoaded', () => {
+        const area = document.getElementById('uploadArea');
+        if (!area) return;
+        area.addEventListener('dragover',  (e) => { e.preventDefault(); area.classList.add('dragover'); });
+        area.addEventListener('dragleave', ()  => area.classList.remove('dragover'));
+        area.addEventListener('drop', (e) => {
+            e.preventDefault();
+            area.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                const input = document.getElementById('mImageFile');
+                input.files = dt.files;
+                handleImageFile(input);
+            }
+        });
+    });
 
     // ============================
     // JURNAL — LOAD
@@ -860,7 +1025,6 @@
     async function loadJurnal() {
         const tbody = document.getElementById('jurnalTableBody');
         tbody.innerHTML = `<tr class="media-empty-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Memuat...</td></tr>`;
-
         try {
             const { data, error } = await db
                 .from('jurnal')
@@ -871,13 +1035,7 @@
             document.getElementById('jurnalCountBadge').textContent = (data || []).length;
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = `
-                    <tr class="media-empty-row">
-                        <td colspan="6">
-                            <i class="fas fa-book-open"></i>
-                            Belum ada jurnal. Tambahkan jurnal di form atas.
-                        </td>
-                    </tr>`;
+                tbody.innerHTML = `<tr class="media-empty-row"><td colspan="6"><i class="fas fa-book-open"></i> Belum ada jurnal.</td></tr>`;
                 return;
             }
 
@@ -889,27 +1047,14 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="judul-cell"><strong>${escH(item.judul)}</strong></td>
-                    <td>
-                        <span class="type-badge jurnal" style="white-space:nowrap">
-                            ${escH(item.kategori)}
-                        </span>
-                    </td>
-                    <td style="max-width:220px;font-size:0.82rem;color:#666">
-                        ${escH(item.ringkasan)}
-                    </td>
-                    <td>
-                        ${item.url
-                            ? `<a href="${escH(item.url)}" target="_blank" class="url-link">
-                                   <i class="fas fa-external-link-alt"></i> Buka Link
-                               </a>`
-                            : `<span class="no-url">—</span>`}
+                    <td><span class="type-badge" style="background:#f5eef8;color:#8e44ad;display:inline-block;padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700">${escH(item.kategori)}</span></td>
+                    <td style="max-width:220px;font-size:0.82rem;color:#666">${escH(item.ringkasan)}</td>
+                    <td>${item.url
+                        ? `<a href="${escH(item.url)}" target="_blank" class="url-link"><i class="fas fa-external-link-alt"></i> Buka Link</a>`
+                        : `<span class="no-url">—</span>`}
                     </td>
                     <td style="white-space:nowrap;color:#aaa;font-size:0.78rem">${date}</td>
-                    <td>
-                        <button class="btn-del-media" onclick="deleteJurnal(${item.id})" title="Hapus">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
+                    <td><button class="btn-del-media" onclick="deleteJurnal(${item.id})" title="Hapus"><i class="fas fa-trash"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -922,10 +1067,10 @@
     // JURNAL — TAMBAH
     // ============================
     async function tambahJurnal() {
-        const judul    = document.getElementById('jJudul').value.trim();
-        const kategori = document.getElementById('jKategori').value;
+        const judul     = document.getElementById('jJudul').value.trim();
+        const kategori  = document.getElementById('jKategori').value;
         const ringkasan = document.getElementById('jRingkasan').value.trim();
-        const url      = document.getElementById('jUrl').value.trim();
+        const url       = document.getElementById('jUrl').value.trim();
 
         if (!judul)     { showToast('Judul wajib diisi!', 'error'); return; }
         if (!ringkasan) { showToast('Ringkasan wajib diisi!', 'error'); return; }
@@ -936,16 +1081,13 @@
 
         try {
             const { error } = await db.from('jurnal').insert([{
-                judul,
-                kategori,
-                ringkasan,
+                judul, kategori, ringkasan,
                 url: url || null
             }]);
             if (error) throw error;
 
-            ['jJudul', 'jRingkasan', 'jUrl'].forEach(id => document.getElementById(id).value = '');
+            ['jJudul','jRingkasan','jUrl'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('jKategori').value = 'Jurnal Psikologi';
-
             showToast('Jurnal berhasil ditambahkan! 🎉');
             loadJurnal();
         } catch (e) {
@@ -960,7 +1102,7 @@
     // JURNAL — HAPUS
     // ============================
     async function deleteJurnal(id) {
-        if (!confirm('Hapus jurnal ini dari database?')) return;
+        if (!confirm('Hapus jurnal ini?')) return;
         try {
             const { error } = await db.from('jurnal').delete().eq('id', id);
             if (error) throw error;
@@ -972,6 +1114,7 @@
     }
 
     // ============================
+    // HELPER
     // ============================
     function escH(text) {
         if (!text) return '';
