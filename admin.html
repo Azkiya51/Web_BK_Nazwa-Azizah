@@ -241,6 +241,7 @@
 
         .type-badge.poster { background: #ebf5fb; color: #2980b9; }
         .type-badge.booklet { background: #eafaf1; color: #27ae60; }
+        .type-badge.jurnal  { background: #f5eef8; color: #8e44ad; }
 
         .judul-cell {
             max-width: 200px;
@@ -391,6 +392,9 @@
         <button class="admin-tab-btn" onclick="switchTab('media')" id="tabBtn-media">
             <i class="fas fa-images"></i> Kelola Media
         </button>
+        <button class="admin-tab-btn" onclick="switchTab('jurnal')" id="tabBtn-jurnal">
+            <i class="fas fa-book-open"></i> Kelola Jurnal
+        </button>
     </div>
 
     <!-- ===================== TAB: ADUAN ===================== -->
@@ -493,6 +497,76 @@
     </div>
 </div>
 
+<!-- ===================== TAB: JURNAL ===================== -->
+<div class="admin-tab-panel" id="panel-jurnal">
+
+    <!-- Form Tambah Jurnal -->
+    <div class="media-form-card">
+        <h3><i class="fas fa-plus-circle"></i> Tambah Jurnal / Artikel</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Judul <span style="color:red">*</span></label>
+                <input type="text" id="jJudul" placeholder="cth. Manajemen Stres Akademik">
+            </div>
+            <div class="form-group">
+                <label>Kategori <span style="color:red">*</span></label>
+                <select id="jKategori">
+                    <option value="Jurnal Psikologi">📄 Jurnal Psikologi</option>
+                    <option value="Artikel Kesehatan Mental">🧠 Artikel Kesehatan Mental</option>
+                    <option value="Tips & Self-Help">💡 Tips & Self-Help</option>
+                    <option value="Penelitian">🔬 Penelitian</option>
+                    <option value="Lainnya">📌 Lainnya</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+            <label>Ringkasan <span style="color:red">*</span></label>
+            <textarea id="jRingkasan" placeholder="Tulis ringkasan singkat isi jurnal/artikel ini..."></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:20px">
+            <label>URL Link Jurnal <span style="color:#aaa;font-weight:400">(opsional)</span></label>
+            <input type="url" id="jUrl" placeholder="https://scholar.google.com/...">
+            <span class="form-hint">Link ke jurnal asli, Google Scholar, atau sumber lainnya. Kosongkan jika tidak ada.</span>
+        </div>
+        <button class="btn-tambah-media" id="btnTambahJurnal" onclick="tambahJurnal()">
+            <i class="fas fa-cloud-upload-alt"></i> Simpan Jurnal
+        </button>
+    </div>
+
+    <!-- Daftar Jurnal -->
+    <div class="media-list-card">
+        <div class="media-list-header">
+            <h3>
+                <i class="fas fa-book-open"></i> Daftar Jurnal
+                <span id="jurnalCountBadge" style="font-size:0.78rem;background:#eafaf1;color:#27ae60;padding:3px 10px;border-radius:20px;font-weight:600;border:1px solid #a9dfbf;margin-left:6px">0</span>
+            </h3>
+        </div>
+        <div style="overflow-x:auto">
+            <table class="media-table">
+                <thead>
+                    <tr>
+                        <th>Judul</th>
+                        <th>Kategori</th>
+                        <th>Ringkasan</th>
+                        <th>Link</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="jurnalTableBody">
+                    <tr class="media-empty-row">
+                        <td colspan="6">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Memuat data jurnal...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
 <!-- Toast -->
 <div class="admin-toast" id="adminToast">
     <i class="fas fa-check-circle"></i>
@@ -520,11 +594,13 @@
 
         if (tab === 'aduan') loadAduan();
         if (tab === 'media') loadMedia();
+        if (tab === 'jurnal') loadJurnal();
     }
 
     function refreshActiveTab() {
         if (activeTab === 'aduan') loadAduan();
-        else loadMedia();
+        else if (activeTab === 'media') loadMedia();
+        else if (activeTab === 'jurnal') loadJurnal();
     }
 
     // ============================
@@ -779,7 +855,123 @@
     }
 
     // ============================
-    // HELPER
+    // JURNAL — LOAD
+    // ============================
+    async function loadJurnal() {
+        const tbody = document.getElementById('jurnalTableBody');
+        tbody.innerHTML = `<tr class="media-empty-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Memuat...</td></tr>`;
+
+        try {
+            const { data, error } = await db
+                .from('jurnal')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+
+            document.getElementById('jurnalCountBadge').textContent = (data || []).length;
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr class="media-empty-row">
+                        <td colspan="6">
+                            <i class="fas fa-book-open"></i>
+                            Belum ada jurnal. Tambahkan jurnal di form atas.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                const date = new Date(item.created_at).toLocaleString('id-ID', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                });
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="judul-cell"><strong>${escH(item.judul)}</strong></td>
+                    <td>
+                        <span class="type-badge jurnal" style="white-space:nowrap">
+                            ${escH(item.kategori)}
+                        </span>
+                    </td>
+                    <td style="max-width:220px;font-size:0.82rem;color:#666">
+                        ${escH(item.ringkasan)}
+                    </td>
+                    <td>
+                        ${item.url
+                            ? `<a href="${escH(item.url)}" target="_blank" class="url-link">
+                                   <i class="fas fa-external-link-alt"></i> Buka Link
+                               </a>`
+                            : `<span class="no-url">—</span>`}
+                    </td>
+                    <td style="white-space:nowrap;color:#aaa;font-size:0.78rem">${date}</td>
+                    <td>
+                        <button class="btn-del-media" onclick="deleteJurnal(${item.id})" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (e) {
+            tbody.innerHTML = `<tr class="media-empty-row"><td colspan="6" style="color:red"><i class="fas fa-exclamation-circle"></i> Gagal: ${e.message}</td></tr>`;
+        }
+    }
+
+    // ============================
+    // JURNAL — TAMBAH
+    // ============================
+    async function tambahJurnal() {
+        const judul    = document.getElementById('jJudul').value.trim();
+        const kategori = document.getElementById('jKategori').value;
+        const ringkasan = document.getElementById('jRingkasan').value.trim();
+        const url      = document.getElementById('jUrl').value.trim();
+
+        if (!judul)     { showToast('Judul wajib diisi!', 'error'); return; }
+        if (!ringkasan) { showToast('Ringkasan wajib diisi!', 'error'); return; }
+
+        const btn = document.getElementById('btnTambahJurnal');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+        try {
+            const { error } = await db.from('jurnal').insert([{
+                judul,
+                kategori,
+                ringkasan,
+                url: url || null
+            }]);
+            if (error) throw error;
+
+            ['jJudul', 'jRingkasan', 'jUrl'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('jKategori').value = 'Jurnal Psikologi';
+
+            showToast('Jurnal berhasil ditambahkan! 🎉');
+            loadJurnal();
+        } catch (e) {
+            showToast('Gagal menyimpan: ' + e.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Simpan Jurnal';
+        }
+    }
+
+    // ============================
+    // JURNAL — HAPUS
+    // ============================
+    async function deleteJurnal(id) {
+        if (!confirm('Hapus jurnal ini dari database?')) return;
+        try {
+            const { error } = await db.from('jurnal').delete().eq('id', id);
+            if (error) throw error;
+            showToast('Jurnal berhasil dihapus.');
+            loadJurnal();
+        } catch (e) {
+            showToast('Gagal menghapus: ' + e.message, 'error');
+        }
+    }
+
+    // ============================
     // ============================
     function escH(text) {
         if (!text) return '';
