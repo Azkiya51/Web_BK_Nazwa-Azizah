@@ -481,9 +481,14 @@
                 </div>
                 <div class="form-group">
                     <label>Tipe <span style="color:red">*</span></label>
-                    <select id="mType">
+                    <select id="mType" onchange="onTypeChange(this.value)">
                         <option value="poster">🖼️ Poster</option>
                         <option value="booklet">📖 Booklet</option>
+                        <option value="flayer">📜 Flayer</option>
+                        <option value="komik">📚 Komik</option>
+                        <option value="video_animasi">🎬 Video Animasi</option>
+                        <option value="video_explainer">▶️ Video Explainer</option>
+                        <option value="video_ppt">🖥️ Video PPT</option>
                     </select>
                 </div>
             </div>
@@ -507,10 +512,10 @@
                 </div>
                 <div class="form-hint" id="uploadStatus" style="margin-top:4px"></div>
             </div>
-            <div class="form-group" style="margin-bottom:16px">
-                <label>URL File Download <span style="color:#aaa;font-weight:400">(opsional)</span></label>
+            <div class="form-group" style="margin-bottom:16px" id="fileUrlGroup">
+                <label id="fileUrlLabel">URL File Download <span style="color:#aaa;font-weight:400">(opsional)</span></label>
                 <input type="url" id="mFileUrl" placeholder="https://... (PDF, Drive, dll)">
-                <span class="form-hint">Kosongkan jika tidak ada file yang bisa diunduh.</span>
+                <span class="form-hint" id="fileUrlHint">Kosongkan jika tidak ada file yang bisa diunduh.</span>
             </div>
             <div class="form-group" style="margin-bottom:20px">
                 <label>Deskripsi <span style="color:#aaa;font-weight:400">(opsional)</span></label>
@@ -842,6 +847,36 @@
     }
 
     // ============================
+    // TIPE CHANGE HANDLER
+    // ============================
+    const VIDEO_TYPES_ADMIN = ['video_animasi','video_explainer','video_ppt'];
+
+    function onTypeChange(type) {
+        const isVid = VIDEO_TYPES_ADMIN.includes(type);
+        const uploadArea  = document.getElementById('uploadArea');
+        const imgWrap     = document.getElementById('imgPreviewWrap');
+        const label       = document.getElementById('fileUrlLabel');
+        const hint        = document.getElementById('fileUrlHint');
+        const placeholder = document.getElementById('mFileUrl');
+
+        if (isVid) {
+            // Video: gambar opsional, URL video wajib
+            uploadArea.querySelector('.upload-text').textContent = 'Thumbnail (opsional — klik untuk pilih)';
+            uploadArea.style.borderColor = '#bbb';
+            label.innerHTML = 'URL Video <span style="color:red">*</span>';
+            hint.textContent = 'Tempel link YouTube (youtube.com/watch?v=...) atau Google Drive.';
+            placeholder.placeholder = 'https://youtube.com/watch?v=... atau https://drive.google.com/...';
+        } else {
+            // Gambar: thumbnail wajib
+            uploadArea.querySelector('.upload-text').textContent = selectedImageFile ? selectedImageFile.name : 'Klik untuk pilih gambar';
+            uploadArea.style.borderColor = '';
+            label.innerHTML = 'URL File Download <span style="color:#aaa;font-weight:400">(opsional)</span>';
+            hint.textContent = 'Kosongkan jika tidak ada file yang bisa diunduh.';
+            placeholder.placeholder = 'https://... (PDF, Drive, dll)';
+        }
+    }
+
+    // ============================
     // MEDIA — TAMBAH
     // ============================
     async function tambahMedia() {
@@ -850,8 +885,10 @@
         const fileUrl   = document.getElementById('mFileUrl').value.trim();
         const deskripsi = document.getElementById('mDeskripsi').value.trim();
 
-        if (!judul)             { showToast('Judul wajib diisi!', 'error'); return; }
-        if (!selectedImageFile) { showToast('Pilih gambar thumbnail terlebih dahulu!', 'error'); return; }
+        const isVid = VIDEO_TYPES_ADMIN.includes(type);
+        if (!judul) { showToast('Judul wajib diisi!', 'error'); return; }
+        if (!isVid && !selectedImageFile) { showToast('Pilih gambar thumbnail terlebih dahulu!', 'error'); return; }
+        if (isVid && !fileUrl) { showToast('URL video wajib diisi untuk konten video!', 'error'); return; }
 
         const btn = document.getElementById('btnTambahMedia');
         btn.disabled = true;

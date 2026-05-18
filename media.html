@@ -3,10 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poster & Booklet | BK-Care</title>
+    <title>Media Edukasi | BK-Care</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+<style>
+    /* ---- TAB SCROLL (mobile) ---- */
+    .tab-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* ---- BADGE WARNA PER TIPE ---- */
+    .badge-poster       { background: rgba(41,128,185,0.85); color:#fff; }
+    .badge-booklet      { background: rgba(39,174,96,0.85);  color:#fff; }
+    .badge-flayer       { background: rgba(230,126,34,0.85); color:#fff; }
+    .badge-komik        { background: rgba(155,89,182,0.85); color:#fff; }
+    .badge-video        { background: rgba(192,57,43,0.85);  color:#fff; }
+
+    /* ---- VIDEO PLACEHOLDER ---- */
+    .video-placeholder {
+        width:100%; height:100%;
+        display:flex; align-items:center; justify-content:center;
+        background: linear-gradient(135deg,#2c3e50,#34495e);
+        color: rgba(255,255,255,0.3);
+        font-size: 3rem;
+        min-height: 200px;
+    }
+
+    .video-wrap { cursor: pointer; }
+
+    /* ---- BTN PLAY ---- */
+    .btn-play {
+        background: linear-gradient(135deg,#e74c3c,#c0392b) !important;
+        color: white !important;
+    }
+    .btn-play:hover { opacity: 0.88; }
+
+    /* ---- VIDEO MODAL ---- */
+    .video-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.88);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .video-modal.show { display: flex; }
+
+    .video-modal-inner {
+        background: #1a1a2e;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 860px;
+        padding: 20px;
+        position: relative;
+    }
+
+    .video-modal-close {
+        position: absolute;
+        top: -14px; right: -14px;
+        background: #e74c3c; color: white;
+        border: none; border-radius: 50%;
+        width: 34px; height: 34px;
+        font-size: 1rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        z-index: 10;
+    }
+
+    .video-title {
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 14px;
+        padding-right: 20px;
+    }
+
+    .video-frame-wrap {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 */
+        height: 0;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #000;
+    }
+
+    .video-frame-wrap iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+    }
+
+    @media (max-width: 600px) {
+        .tab-buttons { gap: 6px; }
+        .tab-btn { font-size: 0.78rem; padding: 7px 12px; }
+    }
+</style>
 </head>
 <body>
 
@@ -38,6 +135,26 @@
             <i class="fas fa-book-open"></i> Booklet
             <span class="count-badge" id="count-booklet">0</span>
         </button>
+        <button class="tab-btn" onclick="filterMedia('flayer')" id="tab-flayer">
+            <i class="fas fa-scroll"></i> Flayer
+            <span class="count-badge" id="count-flayer">0</span>
+        </button>
+        <button class="tab-btn" onclick="filterMedia('komik')" id="tab-komik">
+            <i class="fas fa-book"></i> Komik
+            <span class="count-badge" id="count-komik">0</span>
+        </button>
+        <button class="tab-btn" onclick="filterMedia('video_animasi')" id="tab-video_animasi">
+            <i class="fas fa-film"></i> Video Animasi
+            <span class="count-badge" id="count-video_animasi">0</span>
+        </button>
+        <button class="tab-btn" onclick="filterMedia('video_explainer')" id="tab-video_explainer">
+            <i class="fas fa-play-circle"></i> Video Explainer
+            <span class="count-badge" id="count-video_explainer">0</span>
+        </button>
+        <button class="tab-btn" onclick="filterMedia('video_ppt')" id="tab-video_ppt">
+            <i class="fas fa-desktop"></i> Video PPT
+            <span class="count-badge" id="count-video_ppt">0</span>
+        </button>
     </div>
 
     <div class="media-grid" id="mediaGrid">
@@ -57,6 +174,19 @@
     </div>
 </div>
 
+
+<!-- Video Modal -->
+<div class="video-modal" id="videoModal" onclick="closeVideoModal(event)">
+    <div class="video-modal-inner">
+        <button class="video-modal-close" onclick="closeVideoModal()"><i class="fas fa-times"></i></button>
+        <div class="video-title" id="videoModalTitle"></div>
+        <div class="video-frame-wrap">
+            <iframe id="videoFrame" src="" frameborder="0" allowfullscreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+            </iframe>
+        </div>
+    </div>
+</div>
 
 <!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -86,12 +216,14 @@
         }
     }
 
+    const ALL_TYPES = ['poster','booklet','flayer','komik','video_animasi','video_explainer','video_ppt'];
+
     function updateCounts() {
-        const posters = allMedia.filter(m => m.type === 'poster').length;
-        const booklets = allMedia.filter(m => m.type === 'booklet').length;
         document.getElementById('count-semua').textContent = allMedia.length;
-        document.getElementById('count-poster').textContent = posters;
-        document.getElementById('count-booklet').textContent = booklets;
+        ALL_TYPES.forEach(t => {
+            const el = document.getElementById('count-' + t);
+            if (el) el.textContent = allMedia.filter(m => m.type === t).length;
+        });
     }
 
     function filterMedia(type) {
@@ -102,6 +234,40 @@
         renderMedia(filtered);
     }
 
+    const VIDEO_TYPES = ['video_animasi','video_explainer','video_ppt'];
+
+    const TYPE_LABELS = {
+        poster: 'Poster', booklet: 'Booklet', flayer: 'Flayer',
+        komik: 'Komik', video_animasi: 'Video Animasi',
+        video_explainer: 'Video Explainer', video_ppt: 'Video PPT'
+    };
+
+    const TYPE_ICONS = {
+        poster: 'fa-image', booklet: 'fa-book-open', flayer: 'fa-scroll',
+        komik: 'fa-book', video_animasi: 'fa-film',
+        video_explainer: 'fa-play-circle', video_ppt: 'fa-desktop'
+    };
+
+    function isVideo(type) { return VIDEO_TYPES.includes(type); }
+
+    // Ekstrak YouTube/Drive video ID untuk embed
+    function getEmbedUrl(url) {
+        if (!url) return null;
+        // YouTube
+        const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+        // Google Drive
+        const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+        if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+        return url;
+    }
+
+    function getYoutubeThumbnail(url) {
+        const ytMatch = url && url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+        return null;
+    }
+
     function renderMedia(data) {
         const grid = document.getElementById('mediaGrid');
         if (data.length === 0) {
@@ -109,7 +275,7 @@
                 <div class="empty-state">
                     <i class="fas fa-folder-open"></i>
                     <h3>Belum ada konten</h3>
-                    <p>Admin belum menambahkan ${currentFilter === 'semua' ? 'media' : currentFilter} apapun.</p>
+                    <p>Admin belum menambahkan ${TYPE_LABELS[currentFilter] || 'media'} apapun.</p>
                 </div>`;
             return;
         }
@@ -119,28 +285,64 @@
             card.className = 'media-card';
             card.style.animationDelay = (i * 0.06) + 's';
             card.style.opacity = '0';
-            const hasFile = item.file_url && item.file_url.trim() !== '';
-            card.innerHTML = `
-                <div class="media-img-wrap" onclick="openLightbox('${item.image_url}', '${escapeHtml(item.judul)}')">
-                    <img src="${item.image_url}" alt="${escapeHtml(item.judul)}" loading="lazy"
-                         onerror="this.src='https://via.placeholder.com/300x400?text=Gambar+Tidak+Tersedia'">
-                    <span class="media-type-badge badge-${item.type}">${item.type}</span>
-                    <div class="media-overlay">
-                        <div class="overlay-icon"><i class="fas fa-search-plus"></i></div>
+            const hasFile   = item.file_url && item.file_url.trim() !== '';
+            const typeLabel = TYPE_LABELS[item.type] || item.type;
+            const typeIcon  = TYPE_ICONS[item.type] || 'fa-file';
+
+            if (isVideo(item.type)) {
+                // ---- CARD VIDEO ----
+                const embedUrl = hasFile ? getEmbedUrl(item.file_url) : null;
+                const ytThumb  = hasFile ? getYoutubeThumbnail(item.file_url) : null;
+                const thumbSrc = item.image_url || ytThumb || '';
+
+                card.innerHTML = `
+                    <div class="media-img-wrap video-wrap" ${embedUrl ? `onclick="openVideoModal('${embedUrl}','${escapeHtml(item.judul)}')"` : ''} style="${embedUrl?'cursor:pointer':''}" >
+                        ${thumbSrc
+                            ? `<img src="${thumbSrc}" alt="${escapeHtml(item.judul)}" loading="lazy"
+                                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                            : ''}
+                        <div class="video-placeholder" style="${thumbSrc?'display:none':''}">
+                            <i class="fas ${typeIcon}"></i>
+                        </div>
+                        <span class="media-type-badge badge-video"><i class="fas ${typeIcon}"></i> ${typeLabel}</span>
+                        ${embedUrl ? `<div class="media-overlay"><div class="overlay-icon"><i class="fas fa-play"></i></div></div>` : ''}
                     </div>
-                </div>
-                <div class="media-info">
-                    <h3>${escapeHtml(item.judul)}</h3>
-                    ${item.deskripsi ? `<p>${escapeHtml(item.deskripsi)}</p>` : ''}
-                    <div class="media-actions">
-                        <button class="btn-view" onclick="openLightbox('${item.image_url}', '${escapeHtml(item.judul)}')">
-                            <i class="fas fa-eye"></i> Lihat
-                        </button>
-                        ${hasFile ? `<a href="${item.file_url}" target="_blank" class="btn-download"><i class="fas fa-download"></i> Unduh</a>` : ''}
+                    <div class="media-info">
+                        <h3>${escapeHtml(item.judul)}</h3>
+                        ${item.deskripsi ? `<p>${escapeHtml(item.deskripsi)}</p>` : ''}
+                        <div class="media-actions">
+                            ${embedUrl ? `<button class="btn-view btn-play" onclick="openVideoModal('${embedUrl}','${escapeHtml(item.judul)}')">
+                                <i class="fas fa-play"></i> Putar Video
+                            </button>` : '<span style="font-size:0.78rem;color:#bbb"><i class="fas fa-unlink"></i> Belum ada link</span>'}
+                            ${hasFile ? `<a href="${item.file_url}" target="_blank" class="btn-download"><i class="fas fa-external-link-alt"></i> Buka</a>` : ''}
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // ---- CARD GAMBAR (poster/booklet/flayer/komik) ----
+                const imgSrc = item.image_url || '';
+                card.innerHTML = `
+                    <div class="media-img-wrap" onclick="openLightbox('${imgSrc}','${escapeHtml(item.judul)}')">
+                        <img src="${imgSrc}" alt="${escapeHtml(item.judul)}" loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/300x400?text=Gambar+Tidak+Tersedia'">
+                        <span class="media-type-badge badge-${item.type}"><i class="fas ${typeIcon}"></i> ${typeLabel}</span>
+                        <div class="media-overlay"><div class="overlay-icon"><i class="fas fa-search-plus"></i></div></div>
+                    </div>
+                    <div class="media-info">
+                        <h3>${escapeHtml(item.judul)}</h3>
+                        ${item.deskripsi ? `<p>${escapeHtml(item.deskripsi)}</p>` : ''}
+                        <div class="media-actions">
+                            <button class="btn-view" onclick="openLightbox('${imgSrc}','${escapeHtml(item.judul)}')">
+                                <i class="fas fa-eye"></i> Lihat
+                            </button>
+                            ${hasFile ? `<a href="${item.file_url}" target="_blank" class="btn-download"><i class="fas fa-download"></i> Unduh</a>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
             grid.appendChild(card);
+            // fade-in
+            setTimeout(() => { card.style.opacity = '1'; card.style.transition = 'opacity 0.4s'; }, i * 60);
         });
     }
 
@@ -183,6 +385,27 @@
             sessionStorage.setItem(key, '1');
         } catch(e) {}
     }
+
+    // ============================
+    // VIDEO MODAL
+    // ============================
+    function openVideoModal(embedUrl, title) {
+        document.getElementById('videoFrame').src = embedUrl;
+        document.getElementById('videoModalTitle').textContent = title;
+        document.getElementById('videoModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeVideoModal(event) {
+        if (event && !event.target.classList.contains('video-modal') && !event.target.closest('.video-modal-close')) return;
+        document.getElementById('videoFrame').src = '';
+        document.getElementById('videoModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeVideoModal({target: document.getElementById('videoModal')});
+    });
 
     loadMedia();
     recordView();
