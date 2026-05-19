@@ -1549,3 +1549,147 @@ td {
     transform: translateX(4px);
     opacity: 1;
 }
+/* ============================
+   BANNER SLIDER
+============================ */
+.banner-slider-section {
+    padding: 0 8%;
+    margin: -20px 0 0 0;
+    position: relative;
+    z-index: 1;
+}
+
+.banner-slider-wrapper {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.15);
+}
+
+.banner-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    will-change: transform;
+}
+
+.banner-slide {
+    min-width: 100%;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: #1a2a3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Slide gambar PNG dari Supabase */
+.banner-img-slide {
+    aspect-ratio: 16/5;
+    min-height: 160px;
+    max-height: 320px;
+}
+
+.banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.banner-img-slide:hover .banner-img {
+    transform: scale(1.02);
+}
+
+/* Link overlay transparan di atas gambar */
+.banner-img-link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    cursor: pointer;
+}
+
+/* Skeleton loading */
+.banner-skeleton-slide {
+    aspect-ratio: 16/5;
+    min-height: 160px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #ececec 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Slide kosong / error */
+.banner-empty-slide {
+    aspect-ratio: 16/5;
+    min-height: 160px;
+    background: linear-gradient(135deg, #2c3e50 0%, #3d5166 100%);
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+/* Navigasi panah */
+.banner-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: 0.2s;
+    z-index: 10;
+    padding: 0;
+}
+
+.banner-nav:hover { background: rgba(0,0,0,0.6); }
+
+.banner-prev { left: 14px; }
+.banner-next { right: 14px; }
+
+/* Dots */
+.banner-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 7px;
+    z-index: 10;
+}
+
+.banner-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: 0.3s;
+}
+
+.banner-dot.active {
+    background: white;
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-slider-section { padding: 0 4%; }
+    .banner-img-slide { aspect-ratio: 16/7; min-height: 120px; }
+    .banner-skeleton-slide { aspect-ratio: 16/7; min-height: 120px; }
+    .banner-empty-slide { aspect-ratio: 16/7; min-height: 120px; }
+    .banner-nav { width: 32px; height: 32px; font-size: 0.75rem; }
+}
