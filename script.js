@@ -323,104 +323,49 @@ async function loadJurnalBeranda() {
 }
 
 // ============================
-// BANNER SLIDER (dari Supabase)
+// BANNER SLIDER (Statis dari HTML)
 // ============================
 let bannerSliderState = { current: 0, total: 0, autoTimer: null };
 
-async function loadBannerSlider() {
+function loadBannerSlider() {
     const track = document.getElementById('bannerTrack');
     const dotsContainer = document.getElementById('bannerDots');
     const prevBtn = document.getElementById('bannerPrev');
     const nextBtn = document.getElementById('bannerNext');
     if (!track) return;
 
-    try {
-        const { data, error } = await db
-            .from('spanduk')
-            .select('*')
-            .eq('aktif', true)
-            .order('urutan', { ascending: true });
+    const slides = track.querySelectorAll('.banner-slide');
+    bannerSliderState.total = slides.length;
+    if (bannerSliderState.total === 0) return;
 
-        if (error) throw error;
+    // Buat dots
+    dotsContainer.innerHTML = '';
+    slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'banner-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+        dot.addEventListener('click', () => { bannerGoTo(i); bannerResetAuto(); });
+        dotsContainer.appendChild(dot);
+    });
 
-        if (!data || data.length === 0) {
-            track.innerHTML = `
-                <div class="banner-slide banner-empty-slide">
-                    <div style="text-align:center;color:rgba(255,255,255,0.7);width:100%">
-                        <i class="fas fa-image" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.4"></i>
-                        <p style="font-size:0.9rem">Belum ada spanduk. Admin dapat menambahkan melalui panel kontrol.</p>
-                    </div>
-                </div>`;
-            prevBtn.style.display = 'none';
-            nextBtn.style.display = 'none';
-            return;
-        }
+    if (bannerSliderState.total > 1) {
+        prevBtn.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+        prevBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current - 1); bannerResetAuto(); });
+        nextBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current + 1); bannerResetAuto(); });
 
-        // Render slides
-        track.innerHTML = '';
-        data.forEach(item => {
-            const slide = document.createElement('div');
-            slide.className = 'banner-slide banner-img-slide';
-
-            // Ambil public URL dari Supabase Storage
-            const { data: urlData } = db.storage
-                .from('spanduk')
-                .getPublicUrl(item.file_path);
-            const imgUrl = urlData?.publicUrl || '';
-
-            slide.innerHTML = `
-                <img
-                    src="${imgUrl}"
-                    alt="${item.judul || 'Spanduk BK-Care'}"
-                    class="banner-img"
-                    loading="lazy"
-                    onerror="this.parentElement.style.background='#2c3e50';this.style.display='none'"
-                >
-                ${item.link_url ? `<a class="banner-img-link" href="${item.link_url}" target="_blank" rel="noopener" aria-label="${item.judul || 'Lihat detail'}"></a>` : ''}
-            `;
-            track.appendChild(slide);
+        // Touch swipe
+        let touchStartX = 0;
+        track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        track.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) { bannerGoTo(diff > 0 ? bannerSliderState.current + 1 : bannerSliderState.current - 1); bannerResetAuto(); }
         });
 
-        bannerSliderState.total = data.length;
-        dotsContainer.innerHTML = '';
-
-        if (data.length > 1) {
-            data.forEach((_, i) => {
-                const dot = document.createElement('button');
-                dot.className = 'banner-dot' + (i === 0 ? ' active' : '');
-                dot.setAttribute('aria-label', 'Slide ' + (i + 1));
-                dot.addEventListener('click', () => { bannerGoTo(i); bannerResetAuto(); });
-                dotsContainer.appendChild(dot);
-            });
-
-            prevBtn.style.display = 'flex';
-            nextBtn.style.display = 'flex';
-            prevBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current - 1); bannerResetAuto(); });
-            nextBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current + 1); bannerResetAuto(); });
-
-            // Touch swipe
-            let touchStartX = 0;
-            track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-            track.addEventListener('touchend', e => {
-                const diff = touchStartX - e.changedTouches[0].clientX;
-                if (Math.abs(diff) > 40) { bannerGoTo(diff > 0 ? bannerSliderState.current + 1 : bannerSliderState.current - 1); bannerResetAuto(); }
-            });
-
-            bannerStartAuto();
-        } else {
-            // Hanya 1 slide, sembunyikan navigasi
-            prevBtn.style.display = 'none';
-            nextBtn.style.display = 'none';
-        }
-
-    } catch (e) {
-        console.error('Gagal memuat spanduk:', e);
-        track.innerHTML = `
-            <div class="banner-slide banner-empty-slide">
-                <p style="color:rgba(255,255,255,0.6);font-size:0.85rem;width:100%;text-align:center">
-                    <i class="fas fa-exclamation-circle"></i> Gagal memuat spanduk.
-                </p>
-            </div>`;
+        bannerStartAuto();
+    } else {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
     }
 }
 

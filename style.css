@@ -1583,18 +1583,14 @@ td {
     justify-content: center;
 }
 
-/* Slide gambar PNG dari Supabase */
+/* Slide gambar PNG */
 .banner-img-slide {
-    aspect-ratio: 16/5;
-    min-height: 160px;
-    max-height: 320px;
+    width: 100%;
 }
 
 .banner-img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+    height: auto;
     display: block;
     transition: transform 0.4s ease;
 }
@@ -1688,8 +1684,5 @@ td {
 /* Responsive */
 @media (max-width: 768px) {
     .banner-slider-section { padding: 0 4%; }
-    .banner-img-slide { aspect-ratio: 16/7; min-height: 120px; }
-    .banner-skeleton-slide { aspect-ratio: 16/7; min-height: 120px; }
-    .banner-empty-slide { aspect-ratio: 16/7; min-height: 120px; }
     .banner-nav { width: 32px; height: 32px; font-size: 0.75rem; }
 }
