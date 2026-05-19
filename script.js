@@ -1,3 +1,9 @@
+// ============================================================
+// SCRIPT.JS — BK-Care
+// Versi: Fixed + View Counter Aktif
+// ============================================================
+
+
 // ============================
 // NAVIGASI ANTAR HALAMAN
 // ============================
@@ -12,6 +18,7 @@ function showPage(pageId) {
 
     window.scrollTo(0, 0);
 }
+
 
 // ============================
 // MODE KONSELING (Anonim/Publik)
@@ -28,60 +35,69 @@ function setMode(mode) {
         identitasField.style.display = 'block';
     } else {
         identitasField.style.display = 'none';
-        document.getElementById('nama').value = '';
-        document.getElementById('nis').value = '';
+        const namaEl = document.getElementById('nama');
+        const nisEl  = document.getElementById('nis');
+        if (namaEl) namaEl.value = '';
+        if (nisEl)  nisEl.value  = '';
     }
 }
+
 
 // ============================
 // SUBMIT FORM ADUAN → SUPABASE
 // ============================
-document.getElementById('counselingForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+const counselingForm = document.getElementById('counselingForm');
+if (counselingForm) {
+    counselingForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-    const aduan = document.getElementById('aduan').value.trim();
-    if (aduan.length < 10) {
-        alert('Aduan terlalu pendek. Minimal 10 karakter.');
-        return;
-    }
+        const aduan = document.getElementById('aduan').value.trim();
+        if (aduan.length < 10) {
+            alert('Aduan terlalu pendek. Minimal 10 karakter.');
+            return;
+        }
 
-    const payload = {
-        mode: currentMode,
-        nama: currentMode === 'public' ? (document.getElementById('nama').value || 'Anonim') : 'Anonim',
-        nis: currentMode === 'public' ? (document.getElementById('nis').value || '-') : '-',
-        urgensi: document.getElementById('urgensi').value,
-        aduan: aduan
-    };
+        const payload = {
+            mode   : currentMode,
+            nama   : currentMode === 'public' ? (document.getElementById('nama').value || 'Anonim') : 'Anonim',
+            nis    : currentMode === 'public' ? (document.getElementById('nis').value  || '-')      : '-',
+            urgensi: document.getElementById('urgensi').value,
+            aduan  : aduan
+        };
 
-    const btn = this.querySelector('.btn-submit');
-    btn.disabled = true;
-    btn.textContent = 'Mengirim...';
+        const btn = this.querySelector('.btn-submit');
+        btn.disabled    = true;
+        btn.textContent = 'Mengirim...';
 
-    try {
-        const { error } = await db.from('konseling').insert([payload]);
-        if (error) throw error;
+        try {
+            const { error } = await db.from('konseling').insert([payload]);
+            if (error) throw error;
 
-        this.reset();
-        if (currentMode === 'anonim') setMode('anonim');
-        showPopupPenilaian();
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Gagal mengirim aduan: ' + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Kirim Aduan Sekarang';
-    }
-});
+            this.reset();
+            if (currentMode === 'anonim') setMode('anonim');
+            showPopupPenilaian();
+        } catch (err) {
+            console.error('Error kirim aduan:', err);
+            alert('Gagal mengirim aduan: ' + err.message);
+        } finally {
+            btn.disabled    = false;
+            btn.textContent = 'Kirim Aduan Sekarang';
+        }
+    });
+}
+
 
 // ============================
 // POPUP PENILAIAN
 // ============================
 function showPopupPenilaian() {
-    document.getElementById('popupPenilaian').style.display = 'flex';
+    const popup = document.getElementById('popupPenilaian');
+    if (popup) popup.style.display = 'flex';
 }
 
 function closePopupPenilaian() {
-    document.getElementById('popupPenilaian').style.display = 'none';
+    const popup = document.getElementById('popupPenilaian');
+    if (popup) popup.style.display = 'none';
     loadPenilaianBeranda();
 }
 
@@ -89,36 +105,45 @@ function kePenilaian() {
     window.location.href = 'penilaian.html';
 }
 
+
 // ============================
 // PENILAIAN DI BERANDA → SUPABASE
 // ============================
 async function loadPenilaianBeranda() {
-    // Load votes
+    // --- VOTES ---
     try {
         const { data, error } = await db.from('penilaian_votes').select('type');
         if (error) throw error;
 
-        const likes = data.filter(v => v.type === 'like').length;
-        const dislikes = data.filter(v => v.type === 'dislike').length;
-        const total = likes + dislikes;
-        const likePct = total > 0 ? Math.round((likes / total) * 100) : 0;
+        const likes      = data.filter(v => v.type === 'like').length;
+        const dislikes   = data.filter(v => v.type === 'dislike').length;
+        const total      = likes + dislikes;
+        const likePct    = total > 0 ? Math.round((likes    / total) * 100) : 0;
         const dislikePct = 100 - likePct;
 
-        animateNumber('berandaLikeCount', likes);
+        animateNumber('berandaLikeCount',    likes);
         animateNumber('berandaDislikeCount', dislikes);
-        document.getElementById('berandaBarLike').style.width = likePct + '%';
-        document.getElementById('berandaBarDislike').style.width = dislikePct + '%';
-        document.getElementById('berandaLikePct').textContent = likePct;
-        document.getElementById('berandaDislikePct').textContent = dislikePct;
-        document.getElementById('berandaVoteTotal').textContent =
-            total > 0
-                ? `Total ${total} pengguna telah memberikan penilaian`
-                : 'Belum ada penilaian. Jadilah yang pertama!';
+
+        const barLike    = document.getElementById('berandaBarLike');
+        const barDislike = document.getElementById('berandaBarDislike');
+        const elLikePct  = document.getElementById('berandaLikePct');
+        const elDslPct   = document.getElementById('berandaDislikePct');
+        const elTotal    = document.getElementById('berandaVoteTotal');
+
+        if (barLike)    barLike.style.width    = likePct    + '%';
+        if (barDislike) barDislike.style.width = dislikePct + '%';
+        if (elLikePct)  elLikePct.textContent  = likePct;
+        if (elDslPct)   elDslPct.textContent   = dislikePct;
+        if (elTotal)    elTotal.textContent    = total > 0
+            ? `Total ${total} pengguna telah memberikan penilaian`
+            : 'Belum ada penilaian. Jadilah yang pertama!';
     } catch (e) {
-        document.getElementById('berandaVoteTotal').textContent = 'Gagal memuat data penilaian.';
+        const elTotal = document.getElementById('berandaVoteTotal');
+        if (elTotal) elTotal.textContent = 'Gagal memuat data penilaian.';
+        console.error('loadPenilaianBeranda votes error:', e);
     }
 
-    // Load komentar
+    // --- KOMENTAR ---
     try {
         const { data, error } = await db
             .from('penilaian_komentar')
@@ -127,15 +152,16 @@ async function loadPenilaianBeranda() {
             .limit(3);
         if (error) throw error;
 
-        const list = document.getElementById('berandaKomentarList');
+        const list  = document.getElementById('berandaKomentarList');
         const badge = document.getElementById('berandaKomentarCount');
 
-        // Ambil total count
         const { count } = await db
             .from('penilaian_komentar')
             .select('*', { count: 'exact', head: true });
 
-        badge.textContent = `${count || 0} komentar`;
+        if (badge) badge.textContent = `${count || 0} komentar`;
+
+        if (!list) return;
 
         if (!data || data.length === 0) {
             list.innerHTML = `
@@ -170,27 +196,33 @@ async function loadPenilaianBeranda() {
             list.appendChild(more);
         }
     } catch (e) {
-        document.getElementById('berandaKomentarList').innerHTML =
-            '<div class="komentar-empty">Gagal memuat komentar.</div>';
+        const list = document.getElementById('berandaKomentarList');
+        if (list) list.innerHTML = '<div class="komentar-empty">Gagal memuat komentar.</div>';
+        console.error('loadPenilaianBeranda komentar error:', e);
     }
 }
 
-// Animasi angka naik
+
+// ============================
+// ANIMASI ANGKA NAIK
+// ============================
 function animateNumber(elementId, target) {
     const el = document.getElementById(elementId);
     if (!el) return;
     const duration = 800;
-    const start = performance.now();
-    const from = parseInt(el.textContent) || 0;
+    const start    = performance.now();
+    const from     = parseInt(el.textContent) || 0;
+
     function update(time) {
-        const elapsed = time - start;
+        const elapsed  = time - start;
         const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
+        const eased    = 1 - Math.pow(1 - progress, 3);
         el.textContent = Math.round(from + (target - from) * eased);
         if (progress < 1) requestAnimationFrame(update);
     }
     requestAnimationFrame(update);
 }
+
 
 // ============================
 // MODAL LOGIN GURU BK
@@ -202,13 +234,13 @@ function loginGuru() {
 
 function closeModal() {
     document.getElementById('adminModal').style.display = 'none';
-    document.getElementById('adminPass').value = '';
+    document.getElementById('adminPass').value          = '';
     document.getElementById('loginError').style.display = 'none';
 }
 
 function validateLogin() {
     const passInput = document.getElementById('adminPass').value;
-    const errorMsg = document.getElementById('loginError');
+    const errorMsg  = document.getElementById('loginError');
     const secretKey = "adminbk2026";
 
     if (passInput === secretKey) {
@@ -222,60 +254,94 @@ function validateLogin() {
     }
 }
 
-document.getElementById('adminPass')?.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') validateLogin();
-});
+const adminPassInput = document.getElementById('adminPass');
+if (adminPassInput) {
+    adminPassInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') validateLogin();
+    });
+}
+
 
 // ============================
-// VIEW COUNTER → SUPABASE
+// VIEW COUNTER → SUPABASE  ✅ FIXED
 // ============================
+
+/**
+ * Catat 1 kunjungan per sesi per halaman ke tabel page_views.
+ * Menggunakan sessionStorage agar 1 tab = 1 view, bukan 1 per refresh.
+ */
 async function recordPageView() {
     try {
-        const key = 'view_recorded_' + (window.location.pathname || '/');
-        if (!sessionStorage.getItem(key)) {
-            await db.from('page_views').insert([{
-                ip_address: 'client',
-                user_agent: navigator.userAgent,
-                page: window.location.pathname || '/',
-                visited_at: new Date().toISOString()
-            }]);
-            sessionStorage.setItem(key, '1');
-        }
+        // Kunci unik per halaman per sesi browser
+        const sessionKey = 'bkcare_view_' + (window.location.pathname || '/');
+
+        // Jika sudah dicatat di sesi ini, lewati
+        if (sessionStorage.getItem(sessionKey)) return;
+
+        const { error } = await db.from('page_views').insert([{
+            ip_address : 'client',
+            user_agent : navigator.userAgent,
+            page       : window.location.pathname || '/',
+            visited_at : new Date().toISOString()
+        }]);
+
+        if (error) throw error;
+
+        // Tandai sudah dicatat di sesi ini
+        sessionStorage.setItem(sessionKey, '1');
+        console.log('[BK-Care] ✅ View berhasil dicatat.');
     } catch (e) {
-        console.log('View record skipped:', e.message);
+        // Jangan tampilkan error ke user, cukup log
+        console.warn('[BK-Care] ⚠️ Gagal mencatat view:', e.message);
     }
 }
 
+/**
+ * Tampilkan total pengunjung dari tabel page_views dengan animasi.
+ * Element target: #viewsCounter (ada di footer index.html)
+ */
 async function loadViewsCounter() {
     const el = document.getElementById('viewsCounter');
-    if (!el) return;
+    if (!el) {
+        console.warn('[BK-Care] #viewsCounter tidak ditemukan di DOM.');
+        return;
+    }
+
     try {
         const { count, error } = await db
             .from('page_views')
             .select('*', { count: 'exact', head: true });
+
         if (error) throw error;
 
-        // Animate number in
-        el.innerHTML = '';
         const target = count || 0;
+
+        // Bersihkan loading dots, ganti dengan angka
+        el.innerHTML = '';
         const span = document.createElement('span');
         span.textContent = '0';
         el.appendChild(span);
 
-        const duration = 1200;
-        const start = performance.now();
+        // Animasi count-up
+        const duration = 1500;
+        const start    = performance.now();
+
         function update(time) {
-            const elapsed = time - start;
+            const elapsed  = time - start;
             const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
+            const eased    = 1 - Math.pow(1 - progress, 3);
             span.textContent = Math.round(target * eased).toLocaleString('id-ID');
             if (progress < 1) requestAnimationFrame(update);
         }
         requestAnimationFrame(update);
+
+        console.log('[BK-Care] ✅ View counter dimuat:', target);
     } catch (e) {
         if (el) el.textContent = '–';
+        console.error('[BK-Care] ❌ Gagal memuat view counter:', e.message);
     }
 }
+
 
 // ============================
 // LOAD JURNAL DARI SUPABASE
@@ -283,6 +349,7 @@ async function loadViewsCounter() {
 async function loadJurnalBeranda() {
     const grid = document.getElementById('jurnalGrid');
     if (!grid) return;
+
     try {
         const { data, error } = await db
             .from('jurnal')
@@ -319,8 +386,10 @@ async function loadJurnalBeranda() {
             <div class="journal-card" style="color:#e74c3c;grid-column:1/-1;text-align:center;padding:30px">
                 <i class="fas fa-exclamation-circle"></i> Gagal memuat jurnal: ${e.message}
             </div>`;
+        console.error('loadJurnalBeranda error:', e);
     }
 }
+
 
 // ============================
 // BANNER SLIDER (Statis dari HTML)
@@ -328,10 +397,10 @@ async function loadJurnalBeranda() {
 let bannerSliderState = { current: 0, total: 0, autoTimer: null };
 
 function loadBannerSlider() {
-    const track = document.getElementById('bannerTrack');
+    const track        = document.getElementById('bannerTrack');
     const dotsContainer = document.getElementById('bannerDots');
-    const prevBtn = document.getElementById('bannerPrev');
-    const nextBtn = document.getElementById('bannerNext');
+    const prevBtn      = document.getElementById('bannerPrev');
+    const nextBtn      = document.getElementById('bannerNext');
     if (!track) return;
 
     const slides = track.querySelectorAll('.banner-slide');
@@ -339,47 +408,61 @@ function loadBannerSlider() {
     if (bannerSliderState.total === 0) return;
 
     // Buat dots
-    dotsContainer.innerHTML = '';
-    slides.forEach((_, i) => {
-        const dot = document.createElement('button');
-        dot.className = 'banner-dot' + (i === 0 ? ' active' : '');
-        dot.setAttribute('aria-label', 'Slide ' + (i + 1));
-        dot.addEventListener('click', () => { bannerGoTo(i); bannerResetAuto(); });
-        dotsContainer.appendChild(dot);
-    });
+    if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'banner-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+            dot.addEventListener('click', () => { bannerGoTo(i); bannerResetAuto(); });
+            dotsContainer.appendChild(dot);
+        });
+    }
 
     if (bannerSliderState.total > 1) {
-        prevBtn.style.display = 'flex';
-        nextBtn.style.display = 'flex';
-        prevBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current - 1); bannerResetAuto(); });
-        nextBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current + 1); bannerResetAuto(); });
+        if (prevBtn) {
+            prevBtn.style.display = 'flex';
+            prevBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current - 1); bannerResetAuto(); });
+        }
+        if (nextBtn) {
+            nextBtn.style.display = 'flex';
+            nextBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current + 1); bannerResetAuto(); });
+        }
 
-        // Touch swipe
+        // Touch swipe support
         let touchStartX = 0;
-        track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        track.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
         track.addEventListener('touchend', e => {
             const diff = touchStartX - e.changedTouches[0].clientX;
-            if (Math.abs(diff) > 40) { bannerGoTo(diff > 0 ? bannerSliderState.current + 1 : bannerSliderState.current - 1); bannerResetAuto(); }
+            if (Math.abs(diff) > 40) {
+                bannerGoTo(diff > 0 ? bannerSliderState.current + 1 : bannerSliderState.current - 1);
+                bannerResetAuto();
+            }
         });
 
         bannerStartAuto();
     } else {
-        prevBtn.style.display = 'none';
-        nextBtn.style.display = 'none';
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
     }
 }
 
 function bannerGoTo(index) {
     const { total } = bannerSliderState;
     const track = document.getElementById('bannerTrack');
-    const dots = document.querySelectorAll('.banner-dot');
+    const dots  = document.querySelectorAll('.banner-dot');
     bannerSliderState.current = (index + total) % total;
-    track.style.transform = `translateX(-${bannerSliderState.current * 100}%)`;
+    if (track) track.style.transform = `translateX(-${bannerSliderState.current * 100}%)`;
     dots.forEach((d, i) => d.classList.toggle('active', i === bannerSliderState.current));
 }
 
 function bannerStartAuto() {
-    bannerSliderState.autoTimer = setInterval(() => bannerGoTo(bannerSliderState.current + 1), 4500);
+    bannerSliderState.autoTimer = setInterval(
+        () => bannerGoTo(bannerSliderState.current + 1),
+        4500
+    );
 }
 
 function bannerResetAuto() {
@@ -387,13 +470,17 @@ function bannerResetAuto() {
     bannerStartAuto();
 }
 
+
 // ============================
-// INIT
+// INIT — Dipanggil saat halaman siap
 // ============================
 window.addEventListener('load', async () => {
-    await recordPageView();   // catat dulu, baru load counter biar terhitung
+    // 1. Catat view terlebih dahulu
+    await recordPageView();
+
+    // 2. Load semua komponen
     loadBannerSlider();
     loadPenilaianBeranda();
-    loadViewsCounter();
+    loadViewsCounter();   // ✅ Sekarang akan berjalan setelah view dicatat
     loadJurnalBeranda();
 });
