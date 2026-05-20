@@ -16,8 +16,35 @@ function showPage(pageId) {
     const activeLink = document.getElementById('link-' + pageId);
     if (activeLink) activeLink.classList.add('active');
 
+    // Tutup menu mobile saat navigasi
+    const navLinks = document.getElementById('navLinks');
+    const navToggle = document.getElementById('navToggle');
+    if (navLinks) navLinks.classList.remove('open');
+    if (navToggle) navToggle.classList.remove('open');
+
     window.scrollTo(0, 0);
 }
+
+// ============================
+// HAMBURGER MENU TOGGLE
+// ============================
+document.addEventListener('DOMContentLoaded', function () {
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+        navToggle.addEventListener('click', function () {
+            this.classList.toggle('open');
+            navLinks.classList.toggle('open');
+        });
+        // Tutup menu saat klik di luar navbar
+        document.addEventListener('click', function (e) {
+            if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                navToggle.classList.remove('open');
+                navLinks.classList.remove('open');
+            }
+        });
+    }
+});
 
 
 // ============================
