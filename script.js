@@ -323,11 +323,48 @@ async function loadJurnalBeranda() {
 }
 
 // ============================
-// BANNER SLIDER (Statis dari HTML)
+// BANNER SLIDER (Supabase + Fallback Lokal)
 // ============================
 let bannerSliderState = { current: 0, total: 0, autoTimer: null };
 
-function loadBannerSlider() {
+async function loadBannerSlider() {
+    const track = document.getElementById('bannerTrack');
+    if (!track) return;
+
+    try {
+        const { data, error } = await db
+            .from('spanduk')
+            .select('*')
+            .eq('aktif', true)
+            .order('urutan', { ascending: true });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            // Supabase berhasil → timpa track dengan gambar dari Storage
+            track.innerHTML = '';
+            data.forEach(item => {
+                const { data: urlData } = db.storage
+                    .from('spanduk')
+                    .getPublicUrl(item.file_path);
+                const imgUrl = urlData?.publicUrl || '';
+
+                const slide = document.createElement('div');
+                slide.className = 'banner-slide banner-img-slide';
+                slide.innerHTML = `<img src="${imgUrl}" alt="${item.judul || 'Spanduk BK'}" class="banner-img" loading="lazy">`;
+                track.appendChild(slide);
+            });
+        }
+        // Kalau Supabase kosong atau error → pakai slide yang sudah ada di HTML
+    } catch (e) {
+        console.log('Supabase tidak tersedia, pakai spanduk lokal.');
+    }
+
+    // Inisialisasi slider (baik dari Supabase maupun HTML)
+    initSliderControls();
+}
+
+function initSliderControls() {
     const track = document.getElementById('bannerTrack');
     const dotsContainer = document.getElementById('bannerDots');
     const prevBtn = document.getElementById('bannerPrev');
@@ -338,7 +375,6 @@ function loadBannerSlider() {
     bannerSliderState.total = slides.length;
     if (bannerSliderState.total === 0) return;
 
-    // Buat dots
     dotsContainer.innerHTML = '';
     slides.forEach((_, i) => {
         const dot = document.createElement('button');
@@ -351,10 +387,9 @@ function loadBannerSlider() {
     if (bannerSliderState.total > 1) {
         prevBtn.style.display = 'flex';
         nextBtn.style.display = 'flex';
-        prevBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current - 1); bannerResetAuto(); });
-        nextBtn.addEventListener('click', () => { bannerGoTo(bannerSliderState.current + 1); bannerResetAuto(); });
+        prevBtn.onclick = () => { bannerGoTo(bannerSliderState.current - 1); bannerResetAuto(); };
+        nextBtn.onclick = () => { bannerGoTo(bannerSliderState.current + 1); bannerResetAuto(); };
 
-        // Touch swipe
         let touchStartX = 0;
         track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
         track.addEventListener('touchend', e => {
@@ -388,13 +423,14 @@ function bannerResetAuto() {
 }
 
 // ============================
-// X-BANNER (dari Supabase)
+// X-BANNER (Supabase + Fallback Lokal)
 // ============================
 async function loadXBanner() {
     const grid = document.getElementById('xbannerGrid');
     if (!grid) return;
 
     try {
+        // Coba load dari Supabase
         const { data, error } = await db
             .from('x_banner')
             .select('*')
@@ -404,14 +440,12 @@ async function loadXBanner() {
         if (error) throw error;
 
         if (!data || data.length === 0) {
-            grid.innerHTML = `
-                <div style="grid-column:1/-1;text-align:center;color:#bbb;padding:40px">
-                    <i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:10px;opacity:0.3"></i>
-                    Belum ada X-Banner.
-                </div>`;
+            // Supabase kosong → pakai base64 yang ada di HTML
+            attachXBannerLightbox();
             return;
         }
 
+        // Supabase berhasil → timpa grid dengan gambar dari Storage
         grid.innerHTML = '';
         data.forEach(item => {
             const { data: urlData } = db.storage
@@ -427,13 +461,21 @@ async function loadXBanner() {
         });
 
     } catch (e) {
-        console.error('Gagal memuat X-Banner:', e);
-        const grid = document.getElementById('xbannerGrid');
-        if (grid) grid.innerHTML = `
-            <div style="grid-column:1/-1;text-align:center;color:#e74c3c;padding:30px">
-                <i class="fas fa-exclamation-circle"></i> Gagal memuat X-Banner.
-            </div>`;
+        // Supabase gagal/tidak tersedia → pakai base64 fallback di HTML
+        console.log('Supabase tidak tersedia, pakai data lokal.');
+        attachXBannerLightbox();
     }
+}
+
+// Pasang lightbox ke kartu yang sudah ada di HTML (base64 lokal)
+function attachXBannerLightbox() {
+    document.querySelectorAll('.xbanner-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const img = card.querySelector('.xbanner-img');
+            if (!img) return;
+            openXBannerLightbox(img.src, img.alt);
+        });
+    });
 }
 
 function openXBannerLightbox(src, alt) {
