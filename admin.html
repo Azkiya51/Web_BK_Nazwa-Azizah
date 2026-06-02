@@ -241,6 +241,14 @@
 
         .type-badge.poster { background: #ebf5fb; color: #2980b9; }
         .type-badge.booklet { background: #eafaf1; color: #27ae60; }
+        .type-badge.flayer { background: #fef9e7; color: #d68910; }
+        .type-badge.komik { background: #f5eef8; color: #8e44ad; }
+        .type-badge.video_animasi,
+        .type-badge.video_explainer,
+        .type-badge.video_ppt { background: #fdedec; color: #c0392b; }
+        .type-badge.tiktok { background: #111; color: #fff; }
+        .type-badge.podcast { background: #f5eef8; color: #6c3483; }
+        .type-badge.ai_avatar { background: linear-gradient(135deg,#ebf5fb,#f5eef8); color: #1a5276; }
 
         .judul-cell {
             max-width: 200px;
@@ -473,7 +481,7 @@
 
         <!-- Form Tambah -->
         <div class="media-form-card">
-            <h3><i class="fas fa-plus-circle"></i> Tambah Poster / Booklet</h3>
+            <h3><i class="fas fa-plus-circle"></i> Tambah Media Edukasi</h3>
             <div class="form-row">
                 <div class="form-group">
                     <label>Judul <span style="color:red">*</span></label>
@@ -489,6 +497,9 @@
                         <option value="video_animasi">🎬 Video Animasi</option>
                         <option value="video_explainer">▶️ Video Explainer</option>
                         <option value="video_ppt">🖥️ Video PPT</option>
+                        <option value="tiktok">🎵 TikTok</option>
+                        <option value="podcast">🎙️ Podcast</option>
+                        <option value="ai_avatar">🤖 AI Avatar</option>
                     </select>
                 </div>
             </div>
@@ -530,10 +541,16 @@
         <div class="media-list-card">
             <div class="media-list-header">
                 <h3><i class="fas fa-layer-group"></i> Daftar Media <span id="mediaCountBadge" style="font-size:0.78rem;background:#ebf5fb;color:var(--primary);padding:3px 10px;border-radius:20px;font-weight:600;border:1px solid #b3d7f0;margin-left:6px">0</span></h3>
-                <div class="media-filter-tabs">
+                <div class="media-filter-tabs" style="flex-wrap:wrap;gap:6px">
                     <button class="mf-tab active" onclick="filterAdminMedia('semua')" id="mfTab-semua">Semua</button>
                     <button class="mf-tab" onclick="filterAdminMedia('poster')" id="mfTab-poster">Poster</button>
                     <button class="mf-tab" onclick="filterAdminMedia('booklet')" id="mfTab-booklet">Booklet</button>
+                    <button class="mf-tab" onclick="filterAdminMedia('flayer')" id="mfTab-flayer">Flyer</button>
+                    <button class="mf-tab" onclick="filterAdminMedia('komik')" id="mfTab-komik">Komik</button>
+                    <button class="mf-tab" onclick="filterAdminMedia('video_animasi')" id="mfTab-video_animasi">Video</button>
+                    <button class="mf-tab" onclick="filterAdminMedia('tiktok')" id="mfTab-tiktok"><i class="fab fa-tiktok"></i> TikTok</button>
+                    <button class="mf-tab" onclick="filterAdminMedia('podcast')" id="mfTab-podcast"><i class="fas fa-podcast"></i> Podcast</button>
+                    <button class="mf-tab" onclick="filterAdminMedia('ai_avatar')" id="mfTab-ai_avatar"><i class="fas fa-robot"></i> AI Avatar</button>
                 </div>
             </div>
             <div style="overflow-x:auto">
@@ -789,7 +806,15 @@
         currentMediaFilter = type;
         document.querySelectorAll('.mf-tab').forEach(t => t.classList.remove('active'));
         document.getElementById('mfTab-' + type).classList.add('active');
-        const filtered = type === 'semua' ? allAdminMedia : allAdminMedia.filter(m => m.type === type);
+        let filtered;
+        if (type === 'semua') {
+            filtered = allAdminMedia;
+        } else if (type === 'video_animasi') {
+            // Tab "Video" menampilkan semua tipe video
+            filtered = allAdminMedia.filter(m => ['video_animasi','video_explainer','video_ppt'].includes(m.type));
+        } else {
+            filtered = allAdminMedia.filter(m => m.type === type);
+        }
         renderMediaTable(filtered);
     }
 
@@ -849,27 +874,54 @@
     // ============================
     // TIPE CHANGE HANDLER
     // ============================
-    const VIDEO_TYPES_ADMIN = ['video_animasi','video_explainer','video_ppt'];
+    const VIDEO_TYPES_ADMIN    = ['video_animasi','video_explainer','video_ppt'];
+    const TIKTOK_TYPES_ADMIN   = ['tiktok'];
+    const PODCAST_TYPES_ADMIN  = ['podcast'];
+    const AI_AVATAR_TYPES_ADMIN= ['ai_avatar'];
+    // Tipe yang tidak butuh gambar wajib
+    const NO_IMG_TYPES_ADMIN   = [...VIDEO_TYPES_ADMIN, ...TIKTOK_TYPES_ADMIN, ...PODCAST_TYPES_ADMIN, ...AI_AVATAR_TYPES_ADMIN];
 
     function onTypeChange(type) {
-        const isVid = VIDEO_TYPES_ADMIN.includes(type);
+        const isVid      = VIDEO_TYPES_ADMIN.includes(type);
+        const isTT       = TIKTOK_TYPES_ADMIN.includes(type);
+        const isPod      = PODCAST_TYPES_ADMIN.includes(type);
+        const isAI       = AI_AVATAR_TYPES_ADMIN.includes(type);
+        const noImgReq   = NO_IMG_TYPES_ADMIN.includes(type);
+
         const uploadArea  = document.getElementById('uploadArea');
-        const imgWrap     = document.getElementById('imgPreviewWrap');
         const label       = document.getElementById('fileUrlLabel');
         const hint        = document.getElementById('fileUrlHint');
         const placeholder = document.getElementById('mFileUrl');
 
-        if (isVid) {
-            // Video: gambar opsional, URL video wajib
+        // Reset warna border upload
+        uploadArea.style.borderColor = noImgReq ? '#bbb' : '';
+
+        // Update teks upload area
+        if (noImgReq) {
             uploadArea.querySelector('.upload-text').textContent = 'Thumbnail (opsional — klik untuk pilih)';
-            uploadArea.style.borderColor = '#bbb';
+        } else {
+            uploadArea.querySelector('.upload-text').textContent = selectedImageFile ? selectedImageFile.name : 'Klik untuk pilih gambar';
+        }
+
+        // Update label & hint URL berdasarkan tipe
+        if (isVid) {
             label.innerHTML = 'URL Video <span style="color:red">*</span>';
             hint.textContent = 'Tempel link YouTube (youtube.com/watch?v=...) atau Google Drive.';
             placeholder.placeholder = 'https://youtube.com/watch?v=... atau https://drive.google.com/...';
+        } else if (isTT) {
+            label.innerHTML = 'URL TikTok <span style="color:red">*</span>';
+            hint.textContent = 'Tempel link TikTok: https://www.tiktok.com/@username/video/1234567890';
+            placeholder.placeholder = 'https://www.tiktok.com/@username/video/...';
+        } else if (isPod) {
+            label.innerHTML = 'URL Podcast <span style="color:red">*</span>';
+            hint.textContent = 'Link Spotify episode/show: https://open.spotify.com/episode/... atau Anchor.fm.';
+            placeholder.placeholder = 'https://open.spotify.com/episode/... atau https://anchor.fm/...';
+        } else if (isAI) {
+            label.innerHTML = 'URL AI Avatar <span style="color:red">*</span>';
+            hint.textContent = 'Link ke halaman atau aplikasi AI Avatar yang ingin ditampilkan.';
+            placeholder.placeholder = 'https://... (link AI Avatar / HeyGen / D-ID / dll)';
         } else {
-            // Gambar: thumbnail wajib
-            uploadArea.querySelector('.upload-text').textContent = selectedImageFile ? selectedImageFile.name : 'Klik untuk pilih gambar';
-            uploadArea.style.borderColor = '';
+            // Gambar biasa (poster/booklet/flayer/komik)
             label.innerHTML = 'URL File Download <span style="color:#aaa;font-weight:400">(opsional)</span>';
             hint.textContent = 'Kosongkan jika tidak ada file yang bisa diunduh.';
             placeholder.placeholder = 'https://... (PDF, Drive, dll)';
@@ -885,26 +937,40 @@
         const fileUrl   = document.getElementById('mFileUrl').value.trim();
         const deskripsi = document.getElementById('mDeskripsi').value.trim();
 
-        const isVid = VIDEO_TYPES_ADMIN.includes(type);
+        const isVid  = VIDEO_TYPES_ADMIN.includes(type);
+        const isTT   = TIKTOK_TYPES_ADMIN.includes(type);
+        const isPod  = PODCAST_TYPES_ADMIN.includes(type);
+        const isAI   = AI_AVATAR_TYPES_ADMIN.includes(type);
+        const noImgReq = NO_IMG_TYPES_ADMIN.includes(type);
+
+        // Validasi dasar
         if (!judul) { showToast('Judul wajib diisi!', 'error'); return; }
-        if (!isVid && !selectedImageFile) { showToast('Pilih gambar thumbnail terlebih dahulu!', 'error'); return; }
-        if (isVid && !fileUrl) { showToast('URL video wajib diisi untuk konten video!', 'error'); return; }
+        if (!noImgReq && !selectedImageFile) { showToast('Pilih gambar thumbnail terlebih dahulu!', 'error'); return; }
+        if ((isVid || isTT || isPod || isAI) && !fileUrl) {
+            const tipeLabel = isVid ? 'URL video' : isTT ? 'URL TikTok' : isPod ? 'URL Podcast' : 'URL AI Avatar';
+            showToast(`${tipeLabel} wajib diisi!`, 'error');
+            return;
+        }
 
         const btn = document.getElementById('btnTambahMedia');
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengupload...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
         try {
-            // 1. Upload gambar ke Supabase Storage dulu
-            const imageUrl = await uploadImageToStorage(selectedImageFile);
+            let imageUrl = null;
 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            // Upload gambar jika ada
+            if (selectedImageFile) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengupload...';
+                imageUrl = await uploadImageToStorage(selectedImageFile);
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            }
 
-            // 2. Simpan data ke tabel media
+            // Simpan data ke tabel media
             const { error } = await db.from('media').insert([{
                 judul,
                 type,
-                image_url: imageUrl,
+                image_url: imageUrl || null,
                 file_url: fileUrl || null,
                 deskripsi: deskripsi || null
             }]);
@@ -914,8 +980,14 @@
             ['mJudul','mFileUrl','mDeskripsi'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('mType').value = 'poster';
             removeImage();
+            onTypeChange('poster');
 
-            showToast(`${type === 'poster' ? 'Poster' : 'Booklet'} berhasil ditambahkan! 🎉`);
+            const typeNames = {
+                poster:'Poster', booklet:'Booklet', flayer:'Flyer', komik:'Komik',
+                video_animasi:'Video Animasi', video_explainer:'Video Explainer', video_ppt:'Video PPT',
+                tiktok:'TikTok', podcast:'Podcast', ai_avatar:'AI Avatar'
+            };
+            showToast(`${typeNames[type] || type} berhasil ditambahkan! 🎉`);
             loadMedia();
         } catch (e) {
             showToast('Gagal menyimpan: ' + e.message, 'error');
