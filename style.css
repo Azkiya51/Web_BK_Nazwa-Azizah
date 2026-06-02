@@ -1687,379 +1687,145 @@ td {
     .banner-nav { width: 32px; height: 32px; font-size: 0.75rem; }
 }
 
-/* ============================================================
-   MOBILE RESPONSIVE — BK-Care (Lengkap)
-   Breakpoints: 768px (tablet), 480px (mobile), 360px (kecil)
-============================================================ */
-
 /* ============================
-   HAMBURGER BUTTON
-   Tambahkan di HTML: <button class="nav-toggle" onclick="this.classList.toggle('open');document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+   X-BANNER SECTION
 ============================ */
-.nav-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 38px;
-    height: 38px;
-    background: var(--light);
-    border: none;
-    border-radius: 10px;
+.xbanner-section {
+    padding: 60px 8% 40px;
+    background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%);
+}
+
+.xbanner-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.xbanner-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.xbanner-header .tag {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), #6c63ff);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.xbanner-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+
+.xbanner-header h2 span {
+    color: var(--primary);
+}
+
+.xbanner-header p {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.xbanner-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.xbanner-card {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.10);
     cursor: pointer;
-    padding: 8px;
-    transition: 0.2s;
-    flex-shrink: 0;
+    transition: transform 0.25s, box-shadow 0.25s;
+    background: #f8f8f8;
 }
-.nav-toggle span {
+
+.xbanner-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+}
+
+.xbanner-img {
+    width: 100%;
+    height: auto;
     display: block;
-    height: 2px;
-    background: var(--dark);
-    border-radius: 2px;
-    transition: 0.3s;
 }
-.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-toggle.open span:nth-child(2) { opacity: 0; }
-.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ============================
-   TABLET 768px
-============================ */
+/* Lightbox */
+.xbanner-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.xbanner-lightbox.active {
+    display: flex;
+}
+
+.xbanner-lightbox-img {
+    max-height: 92vh;
+    max-width: 90vw;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.xbanner-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    line-height: 1;
+}
+
+.xbanner-lightbox-close:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .xbanner-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 @media (max-width: 768px) {
-    /* NAVBAR */
-    .navbar { padding: 14px 5%; flex-wrap: wrap; }
-    .nav-toggle { display: flex; }
-    .nav-links {
-        display: none;
-        width: 100%;
-        flex-direction: column;
-        gap: 0;
-        background: white;
-        padding: 10px 0 16px;
-        border-top: 1px solid #f0f0f0;
-        margin-top: 10px;
-    }
-    .nav-links.open { display: flex; }
-    .nav-links li { width: 100%; }
-    .nav-links a {
-        display: block;
-        padding: 12px 20px;
-        font-size: 0.95rem;
-        border-radius: 10px;
-        margin: 2px 8px;
-    }
-    .nav-links a:hover { background: var(--light); }
-    .nav-admin { margin: 8px 8px 0 !important; text-align: center; }
-
-    /* HERO UTAMA */
-    .hero { height: auto; padding: 50px 5% 40px; text-align: center; }
-    .hero-content { width: 100%; }
-    .hero-content h1 { font-size: 2.2rem; line-height: 1.25; }
-    .hero-content p { font-size: 0.92rem; }
-    .hero-btns { flex-direction: column; gap: 12px; align-items: center; }
-    .hero-btns button, .hero-btns .btn-primary, .hero-btns .btn-secondary {
-        width: 100%; max-width: 320px; text-align: center;
-    }
-
-    /* BANNER SLIDER */
-    .banner-slider-section { padding: 0 3%; margin-top: -10px; }
-    .banner-nav { width: 30px; height: 30px; font-size: 0.7rem; }
-
-    /* SECTION */
-    .section-padding { padding: 40px 5%; }
-    .section-header h2 { font-size: 1.6rem; }
-
-    /* BOOKING CARD */
-    .booking-card { padding: 24px 18px; }
-
-    /* JURNAL */
-    .journal-grid { grid-template-columns: 1fr; gap: 16px; }
-
-    /* PROFIL */
-    .profile-card { margin: 20px 15px; }
-    .profile-body { padding: 0 20px 30px; }
-    .profile-info h3 { font-size: 1.4rem; }
-
-    /* PENILAIAN SECTION BERANDA */
-    .penilaian-section { padding: 50px 5%; }
-    .penilaian-header h2 { font-size: 1.6rem; }
-    .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .stat-box { padding: 20px 16px; }
-    .stat-number { font-size: 2.2rem; }
-    .vote-bar-container, .komentar-preview { padding: 20px 18px; }
-
-    /* VIEWS BANNER */
-    .views-banner { padding: 14px 16px; }
-    .views-banner-inner { gap: 10px; }
-    .views-number { font-size: 1.3rem; }
-
-    /* MEDIA PAGE */
-    .media-hero { padding: 40px 5% 30px; }
-    .media-hero h1 { font-size: 2rem; }
-    .tab-container { padding: 0 4%; margin-top: 24px; }
-    .tab-buttons { gap: 8px; }
-    .tab-btn { padding: 8px 16px; font-size: 0.82rem; }
-    .media-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-
-    /* PENILAIAN PAGE */
-    .hero-section { padding: 40px 5% 30px; }
-    .hero-section h1 { font-size: 2.2rem; }
-    .penilaian-container { padding: 0 5% 60px; }
-    .rating-card, .komentar-card { padding: 28px 20px; }
-    .vote-btn { padding: 18px 28px; min-width: 120px; }
-
-    /* ADMIN */
-    .dashboard-container { padding: 0 16px 40px; margin-top: 20px; }
-    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .stat-card { padding: 16px 14px; }
-    .stat-card .info .num { font-size: 1.5rem; }
-
-    /* MODAL */
-    .modal-content { padding: 24px 20px; width: 95%; }
-    .modal-footer { flex-direction: column; }
-    .modal-footer button { width: 100%; }
-}
-
-/* ============================
-   MOBILE 480px
-============================ */
-@media (max-width: 480px) {
-    /* NAVBAR */
-    .navbar { padding: 12px 4%; }
-    .logo { font-size: 1.25rem; }
-
-    /* HERO */
-    .hero-content h1 { font-size: 1.8rem; }
-    .hero-content p { font-size: 0.88rem; }
-    .section-header h2 { font-size: 1.4rem; }
-    .section-padding { padding: 30px 4%; }
-
-    /* PENILAIAN BERANDA */
-    .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .stat-box { padding: 16px 12px; }
-    .stat-icon { font-size: 1.8rem; }
-    .stat-number { font-size: 1.8rem; }
-    .stat-label { font-size: 0.78rem; }
-
-    /* VOTE BUTTONS */
-    .vote-buttons { gap: 12px; }
-    .vote-btn { padding: 16px 20px; min-width: 0; flex: 1; font-size: 0.82rem; }
-    .vote-btn i { font-size: 1.6rem; }
-
-    /* CARDS */
-    .rating-card, .komentar-card { padding: 22px 16px; }
-    .rating-card h2, .komentar-card h2 { font-size: 1rem; }
-
-    /* HERO SECTION */
-    .hero-section h1 { font-size: 1.8rem; }
-    .hero-section p { font-size: 0.88rem; }
-
-    /* MEDIA */
-    .media-hero h1 { font-size: 1.6rem; }
-    .media-hero p { font-size: 0.85rem; }
-    .tab-btn { padding: 7px 12px; font-size: 0.78rem; gap: 5px; }
-    .tab-btn .count-badge { display: none; }
-    .media-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .media-info { padding: 12px 14px 14px; }
-    .media-info h3 { font-size: 0.88rem; }
-    .media-info p { font-size: 0.78rem; }
-    .media-actions { gap: 6px; }
-    .btn-view, .btn-download { font-size: 0.76rem; padding: 8px 6px; }
-
-    /* KOMENTAR */
-    .komentar-meta { flex-direction: column; align-items: flex-start; gap: 2px; }
-    .komentar-waktu { font-size: 0.7rem; }
-
-    /* VIEWS */
-    .views-label { display: none; }
-    .views-number { font-size: 1.2rem; }
-
-    /* TOAST */
-    .toast { white-space: normal; text-align: center; width: 90%; font-size: 0.82rem; padding: 12px 18px; }
-
-    /* PROFIL */
-    .social-links { flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .social-links a { padding: 8px 14px; font-size: 0.82rem; }
-
-    /* BOOKING */
-    .booking-card { padding: 18px 14px; border-radius: 16px; }
-    .input-group input, .input-group select, .input-group textarea { font-size: 0.88rem; }
-
-    /* ADMIN */
-    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .stat-card { padding: 14px 12px; gap: 10px; }
-    .stat-card .icon { width: 40px; height: 40px; font-size: 1.1rem; }
-    .stat-card .info .num { font-size: 1.3rem; }
-    .dashboard-container header h2 { font-size: 1.2rem; }
-    .form-row { grid-template-columns: 1fr !important; }
-    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { min-width: 540px; }
-
-    /* WHATSAPP BTN */
-    .btn-whatsapp { padding: 12px 16px; font-size: 0.88rem; }
-    .btn-whatsapp .fa-whatsapp { font-size: 1.5rem; }
-
-    /* CTA PENILAIAN */
-    .btn-penilaian { padding: 12px 24px; font-size: 0.88rem; width: 100%; justify-content: center; }
-
-    /* SLIDER */
-    .banner-slider-section { padding: 0 2%; }
-    .banner-prev { left: 6px; }
-    .banner-next { right: 6px; }
-}
-
-/* ============================
-   MOBILE KECIL 360px
-============================ */
-@media (max-width: 360px) {
-    .hero-content h1 { font-size: 1.6rem; }
-    .hero-section h1 { font-size: 1.5rem; }
-    .media-hero h1 { font-size: 1.4rem; }
-    .vote-btn { padding: 14px 12px; font-size: 0.78rem; }
-    .vote-btn i { font-size: 1.4rem; }
-    .media-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .media-info h3 { font-size: 0.82rem; }
-    .tab-btn { padding: 6px 10px; font-size: 0.74rem; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .stat-number { font-size: 1.6rem; }
-    .rating-card, .komentar-card { padding: 18px 12px; }
-    .booking-card { padding: 16px 12px; }
-    .stats-row { grid-template-columns: 1fr 1fr; }
-    .stat-card .info .num { font-size: 1.2rem; }
-}
-/* ============================================================
-   PERBAIKAN MOBILE TAMBAHAN
-============================================================ */
-
-/* Pastikan body tidak overflow horizontal */
-html, body {
-    overflow-x: hidden;
-}
-
-/* Mode selector: wrap di layar kecil */
-.mode-selector {
-    flex-wrap: wrap;
-}
-
-/* Tombol hero full width di mobile */
-@media (max-width: 768px) {
-    .hero-btns button {
-        width: 100%;
-        max-width: 320px;
-    }
-
-    /* Mode selector vertikal di mobile */
-    .mode-selector {
-        flex-direction: column;
-    }
-
-    /* Navbar overlay saat menu terbuka */
-    .nav-links.open {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: white;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        z-index: 999;
-        padding: 8px 0 16px;
-        border-top: 1px solid #eee;
-    }
-
-    /* Profile body padding aman */
-    .profile-body { padding: 0 16px 30px; }
-
-    /* Penilaian section tidak terlalu besar */
-    .penilaian-section { padding: 40px 5%; }
-
-    /* Booking card lebih compact */
-    .booking-card { padding: 20px 16px; border-radius: 16px; }
-
-    /* Input readable */
-    .input-group input,
-    .input-group select,
-    .input-group textarea {
-        font-size: 16px; /* cegah zoom otomatis iOS */
-    }
-
-    /* Stats grid full di mobile kecil */
-    .stats-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    /* Komentar preview padding lebih kecil */
-    .komentar-preview { padding: 20px 16px; }
-    .vote-bar-container { padding: 20px 16px; }
-
-    /* Social links wrapping */
-    .social-links {
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-    }
-
-    /* Footer views banner */
-    .views-banner { padding: 14px 12px; }
-    .views-banner-inner { flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .xbanner-section { padding: 40px 4% 30px; }
+    .xbanner-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .xbanner-header h2 { font-size: 1.5rem; }
 }
 
 @media (max-width: 480px) {
-    /* Hero lebih kompak */
-    .hero { padding: 40px 4% 32px; min-height: auto; }
-    .hero-content h1 { font-size: 1.75rem; }
-    .hero-content p { font-size: 0.875rem; }
-
-    /* Tombol hero stack */
-    .hero-btns {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .hero-btns button {
-        max-width: 100%;
-    }
-
-    /* Section padding lebih kecil */
-    .section-padding { padding: 28px 4%; }
-    .section-header h2 { font-size: 1.35rem; }
-    .section-header p { font-size: 0.85rem; }
-
-    /* Booking card */
-    .booking-card { padding: 16px 12px; }
-    .mode-btn { padding: 10px 8px; font-size: 0.82rem; }
-
-    /* Profile */
-    .profile-info h3 { font-size: 1.3rem; }
-    .bio { font-size: 0.85rem; }
-    .profile-img { width: 100px; height: 100px; }
-
-    /* Journal cards */
-    .journal-card { padding: 18px 16px; }
-
-    /* Stats grid: tetap 2 kolom */
-    .stat-box { padding: 16px 12px; }
-    .stat-number { font-size: 1.8rem; }
-    .stat-icon { font-size: 1.8rem; }
-
-    /* Navbar logo lebih kecil */
-    .logo { font-size: 1.2rem; }
-
-    /* Popup modal */
-    .modal-content { padding: 20px 16px; border-radius: 16px; }
-    .modal-footer { flex-direction: column; gap: 8px; }
-    .modal-footer button { width: 100%; }
-
-    /* Views banner compact */
-    .views-label { font-size: 0.78rem; }
-    .views-number { font-size: 1.2rem; }
+    .xbanner-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
-@media (max-width: 360px) {
-    .hero-content h1 { font-size: 1.5rem; }
-    .section-header h2 { font-size: 1.2rem; }
-    .booking-card { padding: 14px 10px; }
-    .stat-number { font-size: 1.5rem; }
-    .logo { font-size: 1.1rem; }
-    .profile-img { width: 88px; height: 88px; }
-    .profile-info h3 { font-size: 1.15rem; }
+.xbanner-skeleton {
+    border-radius: 14px;
+    aspect-ratio: 1/2;
+    background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }
