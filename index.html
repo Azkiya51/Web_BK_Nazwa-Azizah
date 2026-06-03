@@ -12,7 +12,12 @@
 
     <nav class="navbar">
         <div class="logo"><i class="fas fa-heart-pulse"></i> <span>BK-Care</span></div>
-        <ul class="nav-links">
+        <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-links" id="navLinks">
             <li><a href="javascript:void(0)" onclick="showPage('home')" id="link-home">Beranda</a></li>
             <li><a href="javascript:void(0)" onclick="showPage('layanan')" id="link-layanan">Layanan Konseling Digital</a></li>
             <li><a href="javascript:void(0)" onclick="showPage('mental')" id="link-mental">Kesehatan Mental</a></li>
@@ -316,6 +321,36 @@
         </div>
     </div>
 
+    <!-- Hamburger Toggle Script -->
+    <script>
+        (function() {
+            const btn = document.getElementById('navHamburger');
+            const links = document.getElementById('navLinks');
+            if (btn && links) {
+                btn.addEventListener('click', function() {
+                    const isOpen = links.classList.toggle('open');
+                    btn.classList.toggle('active', isOpen);
+                    btn.setAttribute('aria-expanded', isOpen);
+                });
+                // Tutup menu ketika link diklik
+                links.querySelectorAll('a').forEach(function(a) {
+                    a.addEventListener('click', function() {
+                        links.classList.remove('open');
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-expanded', false);
+                    });
+                });
+                // Tutup menu ketika klik di luar
+                document.addEventListener('click', function(e) {
+                    if (!btn.contains(e.target) && !links.contains(e.target)) {
+                        links.classList.remove('open');
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-expanded', false);
+                    }
+                });
+            }
+        })();
+    </script>
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Konfigurasi Supabase -->
